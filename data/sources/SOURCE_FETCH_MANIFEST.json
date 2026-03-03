@@ -1,0 +1,106 @@
+{
+  "generatedAt": "2026-03-03T13:30:27.220Z",
+  "sourceCount": 10,
+  "rows": [
+    {
+      "category": "data",
+      "target": "ze3kr_cet4.csv",
+      "source": "ZE3kr/MemWords-CN",
+      "license": "MIT",
+      "url": "https://raw.githubusercontent.com/ZE3kr/MemWords-CN/fa974dfe3ceb6cb65fec3b8ca87de3285d8891c1/cet4.csv",
+      "bytes": 146920,
+      "sha256": "b52d31bf2b418f80caaf2189e4cfb413a40ca131d861f75c710453e31f4264da",
+      "changed": false
+    },
+    {
+      "category": "data",
+      "target": "cet6_edited.txt",
+      "source": "mahavivo/english-wordlists",
+      "license": "UNSPECIFIED",
+      "url": "https://raw.githubusercontent.com/mahavivo/english-wordlists/395cebd583d97be61b065d281d16dc49c7e4a8b0/CET6_edited.txt",
+      "bytes": 177864,
+      "sha256": "2756c14f1f84d1985969b0e5080a7e8f5691c0ffcb32abbe1d3a061739e89572",
+      "changed": false
+    },
+    {
+      "category": "data",
+      "target": "ielts_vocabulary.js",
+      "source": "hefengxian/ielts-vocabulary",
+      "license": "MIT",
+      "url": "https://raw.githubusercontent.com/hefengxian/ielts-vocabulary/d59669c8c55da843ce5996e3349e8cf0883c30db/vocabulary.js",
+      "bytes": 209186,
+      "sha256": "a26e2ce2310d37045eebbe6f9afa993e685bdcd8aec8197d865a6b60e6e03292",
+      "changed": false
+    },
+    {
+      "category": "data",
+      "target": "learningzone_vocabulary.md",
+      "source": "learning-zone/ielts-materials",
+      "license": "MIT",
+      "url": "https://raw.githubusercontent.com/learning-zone/ielts-materials/61cb945f8d5a9be4b4b8be8c03e37d60940df2ae/vocabulary.md",
+      "bytes": 8085,
+      "sha256": "11bd5bc52b507cc312641d70cd038484d8ecebcbd0bd69c70fde3d8a03564fef",
+      "changed": false
+    },
+    {
+      "category": "data",
+      "target": "ladrift_toefl_words.txt",
+      "source": "ladrift/toefl",
+      "license": "MIT",
+      "url": "https://raw.githubusercontent.com/ladrift/toefl/832ef58460242c32f8fbaa90face59c8dffc9ba1/words/wangyumei-toefl-words.txt",
+      "bytes": 277040,
+      "sha256": "3716917d3ae673f30fee6fafc8251dd04329be5e4220c6e286259364424ccfbf",
+      "changed": false
+    },
+    {
+      "category": "data",
+      "target": "toefl_4300_word.csv",
+      "source": "ZE3kr/MemWords-CN",
+      "license": "MIT",
+      "url": "https://raw.githubusercontent.com/ZE3kr/MemWords-CN/fa974dfe3ceb6cb65fec3b8ca87de3285d8891c1/word.csv",
+      "bytes": 194413,
+      "sha256": "e331e90e0add65e2b87bd44fe056d8167a75d68fede75a65a86ebef1a923b15d",
+      "changed": false
+    },
+    {
+      "category": "data",
+      "target": "toefl_power_vocab.js",
+      "source": "Lina-Liuna/Lina-Liuna.github.io",
+      "license": "MIT",
+      "url": "https://raw.githubusercontent.com/Lina-Liuna/Lina-Liuna.github.io/3407b6d38174bc93f669b1f3d61bcd42cba20763/js/linked_TOEFL_Power_Vocab.js",
+      "bytes": 264020,
+      "sha256": "e84e604c73d8da06401a1e34f120778aadc3c9d726f95c0a41eca5cb36babfab",
+      "changed": false
+    },
+    {
+      "category": "data",
+      "target": "toefl_quizdata.js",
+      "source": "Lina-Liuna/Lina-Liuna.github.io",
+      "license": "MIT",
+      "url": "https://raw.githubusercontent.com/Lina-Liuna/Lina-Liuna.github.io/3407b6d38174bc93f669b1f3d61bcd42cba20763/js/linked_quizdata.js",
+      "bytes": 408498,
+      "sha256": "7aaedc97d8ebb06f342a66ea4598855528c3289aa4ef3ee1d47f1b55ee4b7aa8",
+      "changed": false
+    },
+    {
+      "category": "license",
+      "target": "ielts_vocabulary.LICENSE",
+      "source": "hefengxian/ielts-vocabulary",
+      "license": "MIT",
+      "url": "https://raw.githubusercontent.com/hefengxian/ielts-vocabulary/d59669c8c55da843ce5996e3349e8cf0883c30db/LICENSE",
+      "bytes": 1062,
+      "sha256": "568c14db1974f7378bc4357a72fc4d31e2e840614011ea2ac6ef16f1a9c60095",
+      "changed": false
+    },
+    {
+      "category": "license",
+      "target": "toefl_source.LICENSE",
+      "source": "Lina-Liuna/Lina-Liuna.github.io",
+      "license": "MIT",
+      "url": "https://raw.githubusercontent.com/Lina-Liuna/Lina-Liuna.github.io/3407b6d38174bc93f669b1f3d61bcd42cba20763/LICENSE",
+      "bytes": 1064,
+      "sha256": "b157f2c7e67ec07633d879ba2012eb7b62e5ef979608104c4944f06315ce24fa",
+      "changed": false
+    }
+  ]
+}

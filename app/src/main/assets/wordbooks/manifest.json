@@ -1,0 +1,86 @@
+{
+  "version": "2026-03-03-open-sources-v5",
+  "generatedAt": "2026-03-03",
+  "source": "open-source-mixed",
+  "wordbooks": [
+    {
+      "name": "cet4",
+      "count": 2675,
+      "label": "CET-4"
+    },
+    {
+      "name": "cet6",
+      "count": 2219,
+      "label": "CET-6"
+    },
+    {
+      "name": "ielts",
+      "count": 1922,
+      "label": "IELTS"
+    },
+    {
+      "name": "toefl",
+      "count": 9971,
+      "label": "TOEFL"
+    }
+  ],
+  "sourcesDetail": {
+    "cet4": [
+      "ZE3kr/MemWords-CN cet4.csv (MIT, source file)"
+    ],
+    "cet6": [
+      "mahavivo/english-wordlists CET6_edited.txt (public open source list)"
+    ],
+    "ielts": [
+      "hefengxian/ielts-vocabulary (MIT)",
+      "learning-zone/ielts-materials (MIT supplement)"
+    ],
+    "toefl": [
+      "ZE3kr/MemWords-CN word.csv (MIT, mirrored as toefl_4300_word.csv)",
+      "ladrift/toefl (MIT)",
+      "Lina-Liuna/Lina-Liuna.github.io (MIT supplement)"
+    ],
+    "importStats": {
+      "ze3kr_cet4_csv": {
+        "added": 2675,
+        "duplicates": 0,
+        "skipped": 0
+      },
+      "mahavivo_cet6_txt": {
+        "added": 2219,
+        "duplicates": 54,
+        "skipped": 0
+      },
+      "hefengxian_ielts": {
+        "added": 1661,
+        "duplicates": 13,
+        "skipped": 1
+      },
+      "learningzone_ielts": {
+        "added": 261,
+        "duplicates": 20,
+        "skipped": 0
+      },
+      "ladrift_toefl": {
+        "added": 4926,
+        "duplicates": 322,
+        "skipped": 210
+      },
+      "toefl_4300_csv": {
+        "added": 4361,
+        "duplicates": 3044,
+        "skipped": 0
+      },
+      "lina_toefl_power": {
+        "added": 200,
+        "duplicates": 347,
+        "skipped": 0
+      },
+      "lina_toefl_quiz": {
+        "added": 484,
+        "duplicates": 438,
+        "skipped": 6
+      }
+    }
+  }
+}

@@ -1,0 +1,10 @@
+# Copy this file to local.properties and adjust values for local build.
+sdk.dir=/path/to/Android/sdk
+genius.enabled=false
+genius.token=
+
+# Optional: release signing (kept local only)
+# release.storeFile=/absolute/path/to/keystore.jks
+# release.storePassword=
+# release.keyAlias=
+# release.keyPassword=

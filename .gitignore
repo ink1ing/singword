@@ -1,0 +1,25 @@
+# Gradle
+.gradle/
+**/build/
+
+# Android Studio / IntelliJ
+.idea/
+*.iml
+local.properties
+
+# Kotlin/Java
+*.class
+
+# Keystore / signing
+*.jks
+*.keystore
+
+# OS files
+.DS_Store
+
+# Runtime logs
+*.log
+
+# Temporary UI dumps
+chatgpt_ui*.xml
+tmp_ui*.xml
