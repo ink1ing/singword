@@ -100,12 +100,7 @@ fun FavoritesScreen(viewModel: FavoritesViewModel) {
                     )
                     Spacer(modifier = Modifier.height(12.dp))
                     Text(
-                        text = "还没有收藏的词汇",
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-                    Text(
-                        text = "搜索歌曲后点击 ♡ 收藏",
+                        text = "空空如也",
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         style = MaterialTheme.typography.bodyMedium
                     )

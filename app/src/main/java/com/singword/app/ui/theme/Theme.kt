@@ -9,6 +9,7 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.ui.graphics.drawscope.ContentDrawScope
 
 private val LightColorScheme = lightColorScheme(
@@ -59,10 +60,12 @@ fun SingWordTheme(
     themeMode: AppThemeMode,
     content: @Composable () -> Unit
 ) {
-    val colorScheme = when (themeMode) {
-        AppThemeMode.LIGHT -> LightColorScheme
-        AppThemeMode.DARK -> DarkColorScheme
+    val isDark = when (themeMode) {
+        AppThemeMode.SYSTEM -> isSystemInDarkTheme()
+        AppThemeMode.LIGHT -> false
+        AppThemeMode.DARK -> true
     }
+    val colorScheme = if (isDark) DarkColorScheme else LightColorScheme
 
     CompositionLocalProvider(
         LocalIndication provides NoIndication

@@ -1,8 +1,8 @@
 package com.singword.app.ui.settings
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -17,11 +17,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
@@ -32,7 +30,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.singword.app.BuildConfig
 import com.singword.app.data.local.wordbook.WordbookId
 import com.singword.app.ui.common.noRippleClickable
 import com.singword.app.ui.theme.AppThemeMode
@@ -44,6 +41,11 @@ fun SettingsScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val selection = uiState.selection
+    val darkModeEnabled = when (uiState.themeMode) {
+        AppThemeMode.SYSTEM -> isSystemInDarkTheme()
+        AppThemeMode.DARK -> true
+        AppThemeMode.LIGHT -> false
+    }
 
     Column(
         modifier = Modifier
@@ -72,13 +74,41 @@ fun SettingsScreen(
         Spacer(modifier = Modifier.height(24.dp))
 
         Text(
-            text = "词表选择",
+            text = "主题模式",
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
+        Spacer(modifier = Modifier.height(12.dp))
+        Card(
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "深色模式",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.weight(1f)
+                )
+                Switch(
+                    checked = darkModeEnabled,
+                    onCheckedChange = { checked ->
+                        viewModel.setThemeMode(if (checked) AppThemeMode.DARK else AppThemeMode.LIGHT)
+                    }
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
         Text(
-            text = "选择搜索时要匹配的词表",
-            style = MaterialTheme.typography.bodyMedium,
+            text = "词表",
+            style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
 
@@ -90,72 +120,25 @@ fun SettingsScreen(
         ) {
             Column {
                 WordbookSwitch(
-                    title = "CET-4 四级",
-                    subtitle = "大学英语四级核心词汇",
+                    title = "CET-4",
                     checked = selection[WordbookId.CET4] == true,
                     onToggle = { viewModel.toggle(WordbookId.CET4) }
                 )
                 WordbookSwitch(
-                    title = "CET-6 六级",
-                    subtitle = "大学英语六级核心词汇",
+                    title = "CET-6",
                     checked = selection[WordbookId.CET6] == true,
                     onToggle = { viewModel.toggle(WordbookId.CET6) }
                 )
                 WordbookSwitch(
-                    title = "IELTS 雅思",
-                    subtitle = "雅思考试高频词汇",
+                    title = "IELTS",
                     checked = selection[WordbookId.IELTS] == true,
                     onToggle = { viewModel.toggle(WordbookId.IELTS) }
                 )
                 WordbookSwitch(
-                    title = "TOEFL 托福",
-                    subtitle = "托福考试高频词汇",
+                    title = "TOFEL",
                     checked = selection[WordbookId.TOEFL] == true,
                     onToggle = { viewModel.toggle(WordbookId.TOEFL) }
                 )
-            }
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        Text(
-            text = "主题模式",
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-        Spacer(modifier = Modifier.height(12.dp))
-        Card(
-            shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
-        ) {
-            Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        imageVector = Icons.Default.Palette,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(18.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = "深色 / 浅色",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                }
-                Spacer(modifier = Modifier.height(10.dp))
-                Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                    FilterChip(
-                        selected = uiState.themeMode == AppThemeMode.LIGHT,
-                        onClick = { viewModel.setThemeMode(AppThemeMode.LIGHT) },
-                        label = { Text("浅色") }
-                    )
-                    FilterChip(
-                        selected = uiState.themeMode == AppThemeMode.DARK,
-                        onClick = { viewModel.setThemeMode(AppThemeMode.DARK) },
-                        label = { Text("深色") }
-                    )
-                }
             }
         }
 
@@ -200,18 +183,6 @@ fun SettingsScreen(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(6.dp))
-                Text(
-                    text = "查看词书参考源详细地址与项目仓库",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                Spacer(modifier = Modifier.height(6.dp))
-                Text(
-                    text = "当前版本 ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
             }
         }
 
@@ -231,7 +202,6 @@ fun SettingsScreen(
 @Composable
 private fun WordbookSwitch(
     title: String,
-    subtitle: String,
     checked: Boolean,
     onToggle: () -> Unit
 ) {
@@ -246,11 +216,6 @@ private fun WordbookSwitch(
                 text = title,
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurface
-            )
-            Text(
-                text = subtitle,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
         Switch(

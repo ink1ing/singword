@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.update
 
 data class SettingsUiState(
     val selection: Map<WordbookId, Boolean> = emptyMap(),
-    val themeMode: AppThemeMode = AppThemeMode.LIGHT,
+    val themeMode: AppThemeMode = AppThemeMode.SYSTEM,
     val warning: String? = null
 )
 

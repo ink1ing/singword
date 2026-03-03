@@ -63,7 +63,7 @@ fun SearchScreen(
 
         Spacer(modifier = Modifier.height(12.dp))
         Text(
-            text = "输入英文歌名，提取歌词中的考试高频词",
+            text = "输入歌名，提取高频词",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -96,7 +96,7 @@ fun SearchScreen(
                 .fillMaxWidth()
                 .testTag("search_button")
         ) {
-            Text("下一步：选择歌曲", color = MaterialTheme.colorScheme.onPrimary)
+            Text("下一步", color = MaterialTheme.colorScheme.onPrimary)
         }
 
         if (!error.isNullOrBlank()) {

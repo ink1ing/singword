@@ -34,8 +34,8 @@ class PrefsManager(context: Context) {
     }
 
     fun getThemeMode(): AppThemeMode {
-        val raw = prefs.getString(themeModeKey, AppThemeMode.LIGHT.name).orEmpty()
-        return AppThemeMode.entries.firstOrNull { it.name == raw } ?: AppThemeMode.LIGHT
+        val raw = prefs.getString(themeModeKey, AppThemeMode.SYSTEM.name).orEmpty()
+        return AppThemeMode.entries.firstOrNull { it.name == raw } ?: AppThemeMode.SYSTEM
     }
 
     fun setThemeMode(mode: AppThemeMode) {
