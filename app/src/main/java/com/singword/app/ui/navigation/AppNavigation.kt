@@ -8,9 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
@@ -77,7 +74,6 @@ sealed class NavTab(
 }
 
 private val navTabs = listOf(NavTab.Search, NavTab.Favorites, NavTab.Settings)
-private const val PageSlideDurationMs = 110
 
 @Composable
 fun AppNavigation() {
@@ -150,31 +146,7 @@ fun AppNavigation() {
             NavHost(
                 navController = navController,
                 startDestination = AppRoute.Search,
-                modifier = Modifier.padding(innerPadding),
-                enterTransition = {
-                    slideInHorizontally(
-                        initialOffsetX = { width -> width },
-                        animationSpec = tween(durationMillis = PageSlideDurationMs)
-                    )
-                },
-                exitTransition = {
-                    slideOutHorizontally(
-                        targetOffsetX = { width -> -width / 4 },
-                        animationSpec = tween(durationMillis = PageSlideDurationMs)
-                    )
-                },
-                popEnterTransition = {
-                    slideInHorizontally(
-                        initialOffsetX = { width -> -width / 4 },
-                        animationSpec = tween(durationMillis = PageSlideDurationMs)
-                    )
-                },
-                popExitTransition = {
-                    slideOutHorizontally(
-                        targetOffsetX = { width -> width },
-                        animationSpec = tween(durationMillis = PageSlideDurationMs)
-                    )
-                }
+                modifier = Modifier.padding(innerPadding)
             ) {
                 composable(AppRoute.Search) {
                     SearchScreen(

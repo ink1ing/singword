@@ -73,7 +73,7 @@ fun SearchScreen(
             value = query,
             onValueChange = onQueryChange,
             singleLine = true,
-            placeholder = { Text("例如：Shape of You", color = MaterialTheme.colorScheme.onSurfaceVariant) },
+            placeholder = { Text("例如：California Hotel", color = MaterialTheme.colorScheme.onSurfaceVariant) },
             leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
             keyboardActions = KeyboardActions(onSearch = { onSubmit() }),
