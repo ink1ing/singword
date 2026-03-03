@@ -2,23 +2,27 @@ package com.singword.app.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// Primary palette — based on #3A3A3A dark theme
-val DarkBackground = Color(0xFF2D2D2D)
-val DarkSurface = Color(0xFF3A3A3A)
-val DarkSurfaceVariant = Color(0xFF454545)
-val DarkCard = Color(0xFF424242)
+// Base palette
+val LightBackground = Color(0xFFF5F0EB)
+val DeepBackground = Color(0xFF1C1B19)
 
 // Accent — warm gold
 val AccentGold = Color(0xFFE8B931)
 val AccentGoldDark = Color(0xFFB8941F)
 
+// Surfaces
+val DarkBackground = LightBackground
+val DarkSurface = Color(0xFFF0E7DF)
+val DarkSurfaceVariant = Color(0xFFE3D9CF)
+val DarkCard = Color(0xFFFFFFFF)
+
 // Text
-val TextPrimary = Color(0xFFF5F5F5)
-val TextSecondary = Color(0xFFB0B0B0)
-val TextTertiary = Color(0xFF808080)
+val TextPrimary = DeepBackground
+val TextSecondary = Color(0xFF5D5752)
+val TextTertiary = Color(0xFF81786F)
 
 // Functional
-val ErrorRed = Color(0xFFCF6679)
+val ErrorRed = Color(0xFFB3261E)
 val SuccessGreen = Color(0xFF81C784)
 
 // Word-source tag colors

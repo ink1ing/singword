@@ -1,13 +1,12 @@
 package com.singword.app.ui.theme
 
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
 
-private val DarkColorScheme = darkColorScheme(
+private val SingWordColorScheme = lightColorScheme(
     primary = AccentGold,
-    onPrimary = Color.Black,
+    onPrimary = DeepBackground,
     secondary = AccentGoldDark,
     background = DarkBackground,
     surface = DarkSurface,
@@ -21,7 +20,7 @@ private val DarkColorScheme = darkColorScheme(
 @Composable
 fun SingWordTheme(content: @Composable () -> Unit) {
     MaterialTheme(
-        colorScheme = DarkColorScheme,
+        colorScheme = SingWordColorScheme,
         typography = SingWordTypography,
         content = content
     )
