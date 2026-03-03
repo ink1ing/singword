@@ -30,6 +30,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.singword.app.BuildConfig
 import com.singword.app.data.local.wordbook.WordbookId
 import com.singword.app.ui.common.noRippleClickable
 import com.singword.app.ui.theme.AppThemeMode
@@ -200,6 +201,12 @@ fun SettingsScreen(
                 Text(
                     text = "查看词书参考源详细地址与项目仓库",
                     style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Spacer(modifier = Modifier.height(6.dp))
+                Text(
+                    text = "当前版本 ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})",
+                    style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
