@@ -43,15 +43,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.singword.app.data.local.db.FavoriteWord
-import com.singword.app.ui.theme.AccentGold
-import com.singword.app.ui.theme.DarkCard
 import com.singword.app.ui.theme.ErrorRed
 import com.singword.app.ui.theme.TagCET4
 import com.singword.app.ui.theme.TagCET6
 import com.singword.app.ui.theme.TagIELTS
 import com.singword.app.ui.theme.TagTOEFL
-import com.singword.app.ui.theme.TextSecondary
-import com.singword.app.ui.theme.TextTertiary
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -85,7 +81,7 @@ fun FavoritesScreen(viewModel: FavoritesViewModel) {
             Text(
                 text = "(${favorites.size})",
                 style = MaterialTheme.typography.titleMedium,
-                color = TextSecondary
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
 
@@ -100,18 +96,18 @@ fun FavoritesScreen(viewModel: FavoritesViewModel) {
                     Icon(
                         Icons.Default.FavoriteBorder,
                         contentDescription = null,
-                        tint = TextTertiary,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(64.dp)
                     )
                     Spacer(modifier = Modifier.height(12.dp))
                     Text(
                         text = "还没有收藏的词汇",
-                        color = TextTertiary,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         style = MaterialTheme.typography.bodyLarge
                     )
                     Text(
                         text = "搜索歌曲后点击 ♡ 收藏",
-                        color = TextTertiary,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         style = MaterialTheme.typography.bodyMedium
                     )
                 }
@@ -143,7 +139,7 @@ private fun FavoriteWordCard(
         "CET-6" -> TagCET6
         "IELTS" -> TagIELTS
         "TOEFL" -> TagTOEFL
-        else -> TextSecondary
+        else -> MaterialTheme.colorScheme.onSurfaceVariant
     }
 
     val dismissState = rememberSwipeToDismissBoxState()
@@ -176,7 +172,7 @@ private fun FavoriteWordCard(
         Card(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(12.dp),
-            colors = CardDefaults.cardColors(containerColor = DarkCard)
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
         ) {
             Row(
                 modifier = Modifier
@@ -196,7 +192,7 @@ private fun FavoriteWordCard(
                         Text(
                             text = word.pos,
                             style = MaterialTheme.typography.labelMedium,
-                            color = TextSecondary
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Box(
@@ -217,13 +213,13 @@ private fun FavoriteWordCard(
                     Text(
                         text = word.def,
                         style = MaterialTheme.typography.bodyMedium,
-                        color = TextSecondary
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = "收藏于 ${formatTimestamp(word.timestamp)}",
                         style = MaterialTheme.typography.labelMedium,
-                        color = TextTertiary
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
 
@@ -231,7 +227,7 @@ private fun FavoriteWordCard(
                     Icon(
                         Icons.Default.Delete,
                         contentDescription = "删除",
-                        tint = TextTertiary
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }

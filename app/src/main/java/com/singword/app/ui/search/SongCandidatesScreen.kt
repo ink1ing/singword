@@ -33,11 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.singword.app.data.remote.LyricsCandidate
-import com.singword.app.ui.theme.AccentGold
-import com.singword.app.ui.theme.DarkCard
 import com.singword.app.ui.theme.ErrorRed
-import com.singword.app.ui.theme.TextSecondary
-import com.singword.app.ui.theme.TextTertiary
 
 @Composable
 fun SongCandidatesScreen(
@@ -71,7 +67,7 @@ fun SongCandidatesScreen(
         when {
             uiState.isLoading -> {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator(color = AccentGold)
+                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                 }
             }
 
@@ -91,7 +87,7 @@ fun SongCandidatesScreen(
 
             uiState.candidates.isEmpty() -> {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("没有可选结果，请尝试更完整的歌名", color = TextTertiary)
+                    Text("没有可选结果，请尝试更完整的歌名", color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
 
@@ -104,7 +100,7 @@ fun SongCandidatesScreen(
                         Text(
                             text = "为“${uiState.query.trim()}”找到最多 5 条结果，请选择最匹配的一首",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = TextSecondary,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.padding(bottom = 2.dp)
                         )
                     }
@@ -129,14 +125,14 @@ private fun CandidateCard(
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = DarkCard)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
                     Icons.Default.MusicNote,
                     contentDescription = null,
-                    tint = AccentGold
+                    tint = MaterialTheme.colorScheme.primary
                 )
                 Text(
                     text = candidate.trackName,
@@ -152,7 +148,7 @@ private fun CandidateCard(
                 Text(
                     text = candidate.artistName,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = TextSecondary
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
 
@@ -160,16 +156,16 @@ private fun CandidateCard(
             Text(
                 text = "来源：${candidate.provider}",
                 style = MaterialTheme.typography.labelMedium,
-                color = TextTertiary
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
             Spacer(modifier = Modifier.height(12.dp))
             Button(
                 onClick = onSelect,
-                colors = ButtonDefaults.buttonColors(containerColor = AccentGold),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("选择并校对", color = androidx.compose.ui.graphics.Color.Black)
+                Text("选择并校对", color = MaterialTheme.colorScheme.onPrimary)
             }
         }
     }

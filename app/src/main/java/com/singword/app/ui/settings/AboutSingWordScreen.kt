@@ -30,10 +30,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
-import com.singword.app.ui.theme.AccentGold
-import com.singword.app.ui.theme.DarkCard
-import com.singword.app.ui.theme.TextSecondary
-import com.singword.app.ui.theme.TextTertiary
 
 private data class SourceLink(
     val title: String,
@@ -148,7 +144,7 @@ fun AboutSingWordScreen(onBack: () -> Unit) {
             Icon(
                 Icons.Default.Info,
                 contentDescription = null,
-                tint = AccentGold,
+                tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(24.dp)
             )
             Spacer(modifier = Modifier.width(8.dp))
@@ -166,7 +162,7 @@ fun AboutSingWordScreen(onBack: () -> Unit) {
                 Text(
                     text = "以下为当前项目词书构建使用的参考源详细地址。",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = TextSecondary
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
 
@@ -174,7 +170,7 @@ fun AboutSingWordScreen(onBack: () -> Unit) {
                 item {
                     Card(
                         shape = RoundedCornerShape(16.dp),
-                        colors = CardDefaults.cardColors(containerColor = DarkCard)
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
                     ) {
                         Column(modifier = Modifier.padding(14.dp)) {
                             Text(
@@ -186,7 +182,7 @@ fun AboutSingWordScreen(onBack: () -> Unit) {
                             Text(
                                 text = section.description,
                                 style = MaterialTheme.typography.bodySmall,
-                                color = TextTertiary
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
 
                             section.links.forEach { link ->
@@ -195,7 +191,7 @@ fun AboutSingWordScreen(onBack: () -> Unit) {
                                     Icon(
                                         Icons.Default.Link,
                                         contentDescription = null,
-                                        tint = AccentGold,
+                                        tint = MaterialTheme.colorScheme.primary,
                                         modifier = Modifier
                                             .size(16.dp)
                                             .padding(top = 2.dp)
@@ -211,13 +207,13 @@ fun AboutSingWordScreen(onBack: () -> Unit) {
                                             Text(
                                                 text = link.note,
                                                 style = MaterialTheme.typography.bodySmall,
-                                                color = TextTertiary
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant
                                             )
                                         }
                                         Text(
                                             text = link.url,
                                             style = MaterialTheme.typography.bodySmall,
-                                            color = AccentGold,
+                                            color = MaterialTheme.colorScheme.tertiary,
                                             textDecoration = TextDecoration.Underline,
                                             modifier = Modifier
                                                 .fillMaxWidth()

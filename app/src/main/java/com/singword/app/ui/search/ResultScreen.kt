@@ -37,15 +37,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.singword.app.domain.MatchedWord
-import com.singword.app.ui.theme.AccentGold
-import com.singword.app.ui.theme.DarkCard
 import com.singword.app.ui.theme.ErrorRed
 import com.singword.app.ui.theme.TagCET4
 import com.singword.app.ui.theme.TagCET6
 import com.singword.app.ui.theme.TagIELTS
 import com.singword.app.ui.theme.TagTOEFL
-import com.singword.app.ui.theme.TextSecondary
-import com.singword.app.ui.theme.TextTertiary
 
 @Composable
 fun ResultScreen(
@@ -80,7 +76,7 @@ fun ResultScreen(
         when {
             uiState.isLoading -> {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator(color = AccentGold)
+                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                 }
             }
 
@@ -100,7 +96,7 @@ fun ResultScreen(
 
             uiState.isEmptyResult -> {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("未命中词汇，请尝试切换词表", color = TextTertiary)
+                    Text("未命中词汇，请尝试切换词表", color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
 
@@ -124,7 +120,7 @@ fun ResultScreen(
                         Text(
                             text = "命中词汇 (${uiState.matchedWords.size})",
                             style = MaterialTheme.typography.titleMedium,
-                            color = TextSecondary
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
 
@@ -157,14 +153,14 @@ private fun SongInfoCard(
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = DarkCard)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
                     Icons.Default.MusicNote,
                     contentDescription = null,
-                    tint = AccentGold,
+                    tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(20.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
@@ -178,7 +174,7 @@ private fun SongInfoCard(
                 Text(
                     text = artistName,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = TextSecondary,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(start = 28.dp)
                 )
             }
@@ -186,7 +182,7 @@ private fun SongInfoCard(
             Text(
                 text = "来源：$provider | 共 $totalTokens 个单词，命中 $matchCount 个",
                 style = MaterialTheme.typography.labelMedium,
-                color = TextTertiary,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(start = 28.dp)
             )
         }
@@ -204,13 +200,13 @@ private fun WordCard(
         "CET-6" -> TagCET6
         "IELTS" -> TagIELTS
         "TOEFL" -> TagTOEFL
-        else -> TextSecondary
+        else -> MaterialTheme.colorScheme.onSurfaceVariant
     }
 
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = DarkCard)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         Row(
             modifier = Modifier
@@ -230,7 +226,7 @@ private fun WordCard(
                     Text(
                         text = word.pos,
                         style = MaterialTheme.typography.labelMedium,
-                        color = TextSecondary
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Box(
@@ -251,7 +247,7 @@ private fun WordCard(
                 Text(
                     text = word.def,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = TextSecondary
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
 
@@ -259,7 +255,7 @@ private fun WordCard(
                 Icon(
                     imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                     contentDescription = if (isFavorite) "取消收藏" else "收藏",
-                    tint = if (isFavorite) ErrorRed else TextTertiary
+                    tint = if (isFavorite) ErrorRed else MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }

@@ -29,10 +29,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
-import com.singword.app.ui.theme.AccentGold
-import com.singword.app.ui.theme.DarkSurfaceVariant
-import com.singword.app.ui.theme.TextSecondary
-import com.singword.app.ui.theme.TextTertiary
 
 @Composable
 fun SearchScreen(
@@ -54,7 +50,7 @@ fun SearchScreen(
             Icon(
                 Icons.Default.MusicNote,
                 contentDescription = null,
-                tint = AccentGold,
+                tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(30.dp)
             )
             Spacer(modifier = Modifier.width(8.dp))
@@ -69,7 +65,7 @@ fun SearchScreen(
         Text(
             text = "输入英文歌名，提取歌词中的考试高频词",
             style = MaterialTheme.typography.bodyMedium,
-            color = TextSecondary
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
 
         Spacer(modifier = Modifier.height(20.dp))
@@ -77,13 +73,13 @@ fun SearchScreen(
             value = query,
             onValueChange = onQueryChange,
             singleLine = true,
-            placeholder = { Text("例如：Shape of You", color = TextTertiary) },
+            placeholder = { Text("例如：Shape of You", color = MaterialTheme.colorScheme.onSurfaceVariant) },
             leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
             keyboardActions = KeyboardActions(onSearch = { onSubmit() }),
             colors = TextFieldDefaults.colors(
-                focusedContainerColor = DarkSurfaceVariant,
-                unfocusedContainerColor = DarkSurfaceVariant,
+                focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
                 focusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
                 unfocusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent
             ),
@@ -95,12 +91,12 @@ fun SearchScreen(
         Spacer(modifier = Modifier.height(12.dp))
         Button(
             onClick = onSubmit,
-            colors = ButtonDefaults.buttonColors(containerColor = AccentGold),
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
             modifier = Modifier
                 .fillMaxWidth()
                 .testTag("search_button")
         ) {
-            Text("下一步：选择歌曲", color = androidx.compose.ui.graphics.Color.Black)
+            Text("下一步：选择歌曲", color = MaterialTheme.colorScheme.onPrimary)
         }
 
         if (!error.isNullOrBlank()) {
