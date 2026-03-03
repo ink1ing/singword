@@ -1,7 +1,6 @@
 package com.singword.app.ui.settings
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -30,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import com.singword.app.ui.common.noRippleClickable
 
 private data class SourceLink(
     val title: String,
@@ -217,7 +217,7 @@ fun AboutSingWordScreen(onBack: () -> Unit) {
                                             textDecoration = TextDecoration.Underline,
                                             modifier = Modifier
                                                 .fillMaxWidth()
-                                                .clickable { uriHandler.openUri(link.url) }
+                                                .noRippleClickable { uriHandler.openUri(link.url) }
                                         )
                                     }
                                 }

@@ -1,12 +1,12 @@
 package com.singword.app.ui.theme
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.graphics.Color
 
 object SingWordPalette {
     // Light mode
     val lightBackground = Color(0xFFF5F0EB)
+    val lightSurface = Color(0xFFFFFDFA)
+    val lightSurfaceVariant = Color(0xFFEDE5DD)
     val lightTextPrimary = Color(0xFF1A1A18)
     val lightTextPrimaryAlt = Color(0xFF1C1C1A)
     val lightTextSecondary = Color(0xFF6B6B6B)
@@ -15,6 +15,8 @@ object SingWordPalette {
 
     // Dark mode
     val darkBackground = Color(0xFF1C1B19)
+    val darkSurface = Color(0xFF242320)
+    val darkSurfaceVariant = Color(0xFF2E2D2A)
     val darkTextPrimary = Color(0xFFECECEC)
     val darkTextPrimaryAlt = Color(0xFFE8E8E6)
     val darkTextSecondary = Color(0xFF9B9B9B)
@@ -35,21 +37,3 @@ val TagCET6 = SingWordPalette.tagCET6
 val TagIELTS = SingWordPalette.tagIELTS
 val TagTOEFL = SingWordPalette.tagTOEFL
 val ErrorRed = SingWordPalette.error
-
-val AccentGold = SingWordPalette.darkLink
-
-@Composable
-@ReadOnlyComposable
-fun linkColor(): Color = androidx.compose.material3.MaterialTheme.colorScheme.tertiary
-
-@Composable
-@ReadOnlyComposable
-fun secondaryTextColor(): Color = androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant
-
-@Composable
-@ReadOnlyComposable
-fun mutedTextColor(): Color = androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.9f)
-
-@Composable
-@ReadOnlyComposable
-fun codeTextColor(): Color = androidx.compose.material3.MaterialTheme.colorScheme.outline

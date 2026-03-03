@@ -1,7 +1,6 @@
 package com.singword.app.ui.settings
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,11 +19,8 @@ import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Switch
-import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -33,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.singword.app.data.local.wordbook.WordbookId
+import com.singword.app.ui.common.noRippleClickable
 import com.singword.app.ui.theme.AppThemeMode
 
 @Composable
@@ -142,15 +139,15 @@ fun SettingsScreen(
                 }
                 Spacer(modifier = Modifier.height(10.dp))
                 Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                    FilterChip(
+                    ThemeModeChip(
                         selected = uiState.themeMode == AppThemeMode.LIGHT,
                         onClick = { viewModel.setThemeMode(AppThemeMode.LIGHT) },
-                        label = { Text("浅色") }
+                        label = "浅色"
                     )
-                    FilterChip(
+                    ThemeModeChip(
                         selected = uiState.themeMode == AppThemeMode.DARK,
                         onClick = { viewModel.setThemeMode(AppThemeMode.DARK) },
-                        label = { Text("深色") }
+                        label = "深色"
                     )
                 }
             }
@@ -173,7 +170,7 @@ fun SettingsScreen(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { onOpenAbout() }
+                    .noRippleClickable { onOpenAbout() }
                     .padding(16.dp)
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -242,15 +239,72 @@ private fun WordbookSwitch(
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
-        Switch(
+        TogglePill(
             checked = checked,
-            onCheckedChange = { onToggle() },
-            colors = SwitchDefaults.colors(
-                checkedThumbColor = MaterialTheme.colorScheme.primary,
-                checkedTrackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
-                uncheckedThumbColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant
-            )
+            onClick = onToggle
+        )
+    }
+}
+
+@Composable
+private fun ThemeModeChip(
+    selected: Boolean,
+    onClick: () -> Unit,
+    label: String
+) {
+    val background = if (selected) {
+        MaterialTheme.colorScheme.primary.copy(alpha = 0.18f)
+    } else {
+        MaterialTheme.colorScheme.surfaceVariant
+    }
+    val color = if (selected) {
+        MaterialTheme.colorScheme.primary
+    } else {
+        MaterialTheme.colorScheme.onSurfaceVariant
+    }
+
+    Row(
+        modifier = Modifier
+            .noRippleClickable(onClick)
+            .background(background, RoundedCornerShape(999.dp))
+            .padding(horizontal = 14.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodyMedium,
+            color = color
+        )
+    }
+}
+
+@Composable
+private fun TogglePill(
+    checked: Boolean,
+    onClick: () -> Unit
+) {
+    val background = if (checked) {
+        MaterialTheme.colorScheme.primary.copy(alpha = 0.18f)
+    } else {
+        MaterialTheme.colorScheme.surfaceVariant
+    }
+    val color = if (checked) {
+        MaterialTheme.colorScheme.primary
+    } else {
+        MaterialTheme.colorScheme.onSurfaceVariant
+    }
+
+    Row(
+        modifier = Modifier
+            .noRippleClickable(onClick)
+            .background(background, RoundedCornerShape(999.dp))
+            .padding(horizontal = 12.dp, vertical = 6.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = if (checked) "开启" else "关闭",
+            style = MaterialTheme.typography.labelMedium,
+            color = color
         )
     }
 }

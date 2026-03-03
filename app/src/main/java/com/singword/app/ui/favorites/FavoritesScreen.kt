@@ -1,6 +1,5 @@
 package com.singword.app.ui.favorites
 
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -152,11 +151,11 @@ private fun FavoriteWordCard(
         state = dismissState,
         enableDismissFromStartToEnd = false,
         backgroundContent = {
-            val color by animateColorAsState(
-                targetValue = if (dismissState.targetValue == SwipeToDismissBoxValue.EndToStart)
-                    ErrorRed else Color.Transparent,
-                label = "bg"
-            )
+            val color = if (dismissState.targetValue == SwipeToDismissBoxValue.EndToStart) {
+                ErrorRed
+            } else {
+                Color.Transparent
+            }
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -165,7 +164,11 @@ private fun FavoriteWordCard(
                     .padding(end = 20.dp),
                 contentAlignment = Alignment.CenterEnd
             ) {
-                Icon(Icons.Default.Delete, contentDescription = "删除", tint = Color.White)
+                Icon(
+                    Icons.Default.Delete,
+                    contentDescription = "删除",
+                    tint = MaterialTheme.colorScheme.onError
+                )
             }
         }
     ) {
