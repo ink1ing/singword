@@ -2,6 +2,19 @@
 
 **听歌背单词** — 输入英文歌名，自动匹配四六级/雅思/托福高频词汇并展示释义。
 
+## 仓库结构
+
+```text
+.
+├─ app/                      # Android app module
+├─ ios/                      # iOS (Swift 原生工程)
+├─ data/sources/             # 词书来源与质量报告
+├─ scripts/                  # 词书处理与测试脚本
+├─ QA_CHECKLIST.md           # Android 验收清单
+├─ IOS_QA_CHECKLIST.md       # iOS 验收清单
+└─ plans.md                  # 实施计划
+```
+
 ## 产品定位
 
 一个轻量级的英语学习辅助工具。通过英文歌词这一天然语料，帮助用户在听歌的同时复习考试高频词汇。
@@ -21,13 +34,13 @@
 
 | 层面 | 选择 |
 |------|------|
-| 平台 | Android（先行）→ iOS（后续） |
-| 语言 | Kotlin |
+| 平台 | Android + iOS |
+| 语言 | Kotlin（Android） / Swift（iOS） |
 | 架构 | MVVM + Repository |
-| UI | Jetpack Compose + Material 3 |
-| 网络 | Retrofit + OkHttp |
-| 本地存储 | Room（收藏） + Assets JSON（词表） |
-| 异步 | Kotlin Coroutines + Flow |
+| UI | Jetpack Compose + Material 3（Android） / SwiftUI（iOS） |
+| 网络 | Retrofit + OkHttp（Android） / URLSession（iOS） |
+| 本地存储 | Room（Android 收藏） + JSON 文件持久化（iOS 收藏） + Assets JSON（词表） |
+| 异步 | Kotlin Coroutines + Flow（Android） / Swift Concurrency（iOS） |
 
 ## 歌词获取策略
 
@@ -129,9 +142,27 @@ node scripts/verify_wordbooks.mjs
 ./gradlew :app:connectedDebugAndroidTest -PincludeEmulatorOnlyTests=true
 ```
 
+## iOS 本地开发（Swift 原生）
+
+- 工程路径：`ios/singword.xcodeproj`
+- 代码路径：`ios/singword/`
+- 词表资源：`ios/singword/Resources/wordbooks/`
+
+命令行构建：
+
+```bash
+cd ios
+xcodebuild -project singword.xcodeproj -scheme singword -destination 'platform=iOS Simulator,name=iPhone 17' build
+```
+
+iOS 验收清单见：
+
+- `IOS_QA_CHECKLIST.md`
+
 ## 当前实现状态
 
-- 已完成：主流程、Room 收藏、词表切换、主歌词源（lrclib）
+- Android：主流程、Room 收藏、词表切换、主歌词源（lrclib）已完成
+- iOS（Swift 原生）：主流程、候选选择、词汇匹配、收藏、设置、关于页已完成并可编译运行
 - 预留：Genius fallback（默认关闭）
-- 资源：词表位于 `app/src/main/assets/wordbooks/`
+- 资源：Android 词表位于 `app/src/main/assets/wordbooks/`；iOS 词表位于 `ios/singword/Resources/wordbooks/`
 - 词书下载尝试记录：`data/sources/BOOK_DOWNLOAD_ATTEMPTS.md`

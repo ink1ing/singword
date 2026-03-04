@@ -1,94 +1,130 @@
-# SingWord 开发计划
+# SingWord iOS 原生迁移计划（Swift）
 
-## Phase 1 — 项目骨架
+## 目标与范围
 
-> 目标：跑通 Android 项目，搭好 MVVM 架构
+- 目标：将当前 Android 版 SingWord 核心能力迁移到 `ios/singword` 空 iOS 工程，使用 Swift 原生实现（SwiftUI + URLSession + UserDefaults + 本地 JSON 文件持久化）。
+- 范围：
+  - 搜索歌曲并拉取歌词候选（lrclib 主源）。
+  - 选择候选歌曲后进行词汇命中匹配（CET-4/CET-6/IELTS/TOEFL）。
+  - 结果页收藏/取消收藏。
+  - 收藏夹浏览与删除。
+  - 设置页词表开关（至少保留一个）、主题模式切换。
+  - 关于页展示项目与词书来源链接。
+- 本次不做：
+  - Genius 真正抓词（与 Android 对齐：预留）。
+  - 复杂离线缓存策略与增量同步。
 
-- [x] 初始化 Android 项目（Kotlin + Jetpack Compose）
-- [x] 配置 Gradle 依赖（Retrofit, Room, Compose Navigation, Material 3）
-- [x] 建立包结构：`data/` `domain/` `ui/` `di/`
-- [x] 设置暗色主题（主色 `#3A3A3A`，配色方案）
+## Android -> iOS 模块映射
 
-## Phase 2 — 词表数据
+- `data/remote` -> `Networking/*`（`LyricsDataSource` / `LrclibLyricsDataSource` / `LyricsRepository`）。
+- `data/local/wordbook` -> `Data/Wordbooks/*`（词表模型、目录、加载器、错误类型）。
+- `data/local/prefs` -> `Data/Settings/*`（`UserDefaults` 持久化词表开关与主题）。
+- `data/local/db` -> `Data/Favorites/*`（JSON 文件持久化收藏，按时间倒序）。
+- `domain/*` -> `Domain/*`（分词与匹配逻辑）。
+- `ui/*` + `navigation/*` -> `UI/*`（Tab + NavigationStack + 页面拆分）。
 
-> 目标：本地词表可加载、可查询
+## 目录与文件规划
 
-- [x] 准备 CET4/6 / IELTS / TOEFL 的 JSON 词表文件
-- [x] 放入 `assets/wordbooks/` 目录
-- [x] 实现 `WordbookRepository`：从 assets 读取 JSON → 解析为 `Map<String, WordEntry>`
-- [x] 实现词表选择逻辑（SharedPreferences 存用户选择）
+- `ios/singword/App/`
+  - `SingWordApp.swift`（应用入口、全局依赖注入、主题控制）
+  - `AppCoordinator.swift`（全局容器/共享状态）
+- `ios/singword/Domain/`
+  - `LyricsProcessor.swift`
+  - `VocabMatcher.swift`
+  - `MatchedWord.swift`
+- `ios/singword/Data/Wordbooks/`
+  - `WordEntry.swift`
+  - `WordbookId.swift`
+  - `WordbookMeta.swift`
+  - `WordbookLoadResult.swift`
+  - `WordbookRepository.swift`
+- `ios/singword/Data/Settings/`
+  - `AppThemeMode.swift`
+  - `SettingsRepository.swift`
+- `ios/singword/Data/Favorites/`
+  - `FavoriteWord.swift`
+  - `FavoriteRepository.swift`
+- `ios/singword/Networking/`
+  - `LyricsResult.swift`
+  - `LyricsCandidate.swift`
+  - `LyricsCandidateResult.swift`
+  - `LyricsDataSource.swift`
+  - `LrclibLyricsDataSource.swift`
+  - `GeniusLyricsDataSource.swift`
+  - `LyricsRepository.swift`
+- `ios/singword/UI/`
+  - `Search/SearchViewModel.swift`
+  - `Search/SearchScreen.swift`
+  - `Search/SongCandidatesScreen.swift`
+  - `Search/ResultScreen.swift`
+  - `Favorites/FavoritesViewModel.swift`
+  - `Favorites/FavoritesScreen.swift`
+  - `Settings/SettingsViewModel.swift`
+  - `Settings/SettingsScreen.swift`
+  - `Settings/AboutSingWordScreen.swift`
+  - `Theme/SingWordPalette.swift`
+- `ios/singword/Resources/wordbooks/`
+  - `cet4.json` / `cet6.json` / `ielts.json` / `toefl.json` / `manifest.json`
 
-## Phase 3 — 歌词获取
+## 迁移执行步骤
 
-> 目标：输入歌名 → 拿到歌词文本
+1. 建立 iOS 代码骨架
+- 新建分层目录与模型类型。
+- 落地错误枚举与 Result 状态对象，保持与 Android 语义一致。
 
-- [x] 定义 `LyricsApi` 接口（Retrofit）
-- [x] 实现 `LrclibService`：调用 lrclib.net 搜索 API
-- [x] 预留 `GeniusService` 接口（暂不实现，返回空）
-- [x] 实现 `LyricsRepository`：主 → fallback 逻辑
+2. 迁移核心业务逻辑
+- 迁移 `LyricsProcessor`（标点清洗、去重、过滤长度<=1）。
+- 迁移 `VocabMatcher`（按字母排序，保留 source 标签）。
 
-## Phase 4 — 核心匹配逻辑
+3. 迁移词表与设置
+- 复制 JSON 词表到 iOS 资源目录。
+- 实现 `WordbookRepository`：从 Bundle 读取 JSON，缓存 map，支持多词表合并。
+- 实现 `SettingsRepository`：词表开关 + 主题模式持久化，保证至少 1 个词表开启。
 
-> 目标：歌词 → 命中词汇列表
+4. 迁移歌词网络层
+- `URLSession` 调用 `https://lrclib.net/api/search?q=`。
+- 网络/服务错误映射到统一结果类型。
+- 实现主源与 fallback 策略（fallback 仅在 not found 触发）。
 
-- [x] 实现 `LyricsProcessor`：分词 → 清洗标点 → 小写 → 去重
-- [x] 实现 `VocabMatcher`：词列表 × 词表 → 命中结果
-- [x] 数据类 `MatchedWord(word, pos, def, source)` — source 标记来自哪个词表
+5. 迁移收藏层
+- 用本地 JSON 文件替代 Room：增删查 + 按时间倒序。
+- 提供“收藏单词集合”以驱动结果页爱心状态。
 
-## Phase 5 — UI 搜索页
+6. 迁移 UI 与导航
+- 主体结构：`TabView(搜索/收藏/设置)`。
+- 搜索流：搜索页 -> 候选页 -> 结果页。
+- 收藏页支持删除。
+- 设置页支持词表开关、主题切换、进入关于页。
+- 关于页展示外链并可点击打开。
 
-> 目标：用户输入歌名 → 展示匹配词汇
+7. 编译与验证
+- 运行 `xcodebuild` 对 iOS 工程进行编译验证。
+- 人工走查关键路径：
+  - 搜索存在歌曲 -> 选候选 -> 出命中词。
+  - 空搜索、词表全关、网络异常提示。
+  - 收藏/取消收藏与收藏夹联动。
+  - 词表开关影响命中结果。
 
-- [x] 搜索页 UI：搜索框 + 搜索按钮
-- [x] 结果展示：歌曲信息卡片 + 命中词列表（LazyColumn）
-- [x] 每个词条：单词、词性、释义、词表标签、收藏按钮
-- [x] 空状态 / 加载中 / 错误状态处理
-- [x] SearchViewModel：串联 搜索 → 匹配 全流程
+## 风险与处理
 
-## Phase 6 — 收藏功能
+- 资源打包风险：若 JSON 未进 Bundle，将出现词表缺失。
+  - 处理：使用工程根组同步 + 编译验证 + 运行时错误提示。
+- 网络源不稳定：lrclib 返回慢或异常。
+  - 处理：超时、错误分类、重试入口。
+- 收藏持久化一致性：并发写入可能覆盖。
+  - 处理：`actor` 串行化读写。
 
-> 目标：用户可收藏/取消收藏词汇，独立页面查看
+## 完成定义（DoD）
 
-- [x] Room 数据库：`FavoriteWord` 表（word, pos, def, source, timestamp）
-- [x] `FavoriteDao`：增删查
-- [x] 收藏页 UI：按时间倒序展示所有收藏词，支持左滑删除
-- [x] 搜索结果中的收藏按钮联动 Room 数据
+- iOS 工程可编译通过。
+- 核心功能在 iOS 端可用，并与 Android 行为基本一致。
+- `plans.md` 与实际代码一致，且迁移路径可复现。
+- 关键代码已按模块分层，不是单文件堆砌。
 
-## Phase 7 — 设置页
+## 执行状态
 
-> 目标：统一配置词表选择
-
-- [x] 设置页 UI：词表多选开关（CET-4 / CET-6 / IELTS / TOEFL）
-- [x] SharedPreferences 持久化用户选择
-- [x] 搜索时根据设置动态加载对应词表
-
-## Phase 8 — 导航与整合
-
-> 目标：三个 Tab 页面串联
-
-- [x] Bottom Navigation：搜索 🔍 / 收藏 ⭐ / 设置 ⚙️
-- [x] Compose Navigation 路由配置
-- [x] 全局状态串联验证
-
-## Phase 9 — 打磨与打包
-
-> 目标：完善细节，输出 APK
-
-- [x] UI 微调：字体、间距、动画过渡
-- [x] 异常兜底：网络超时、歌词为空、词表加载失败
-- [x] 构建 Release APK
-- [x] 基本功能走查测试
-
----
-
-## 验证计划
-
-| 场景 | 验证方式 |
-|------|----------|
-| 搜索热门歌 "Shape of You" | 确认返回歌词 + 命中词 ≥ 5 个 |
-| 搜索不存在的歌名 | 确认显示"未找到歌词"提示 |
-| 切换词表后重新搜索 | 确认命中结果随词表变化 |
-| 收藏 → 去收藏页查看 | 确认收藏列表正确 |
-| 取消收藏 → 刷新 | 确认已移除 |
-| 无网络状态搜索 | 确认显示网络错误提示 |
-| 构建 Release APK | `./gradlew assembleRelease` 成功 |
+- [x] 计划输出
+- [x] 代码迁移完成
+- [x] 构建验证（`xcodebuild` 成功）
+- [x] iOS 验收清单输出（`IOS_QA_CHECKLIST.md`）
+- [x] 结果回报

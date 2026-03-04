@@ -23,3 +23,13 @@ local.properties
 # Temporary UI dumps
 chatgpt_ui*.xml
 tmp_ui*.xml
+
+# Release artifacts
+*.apk
+*.idsig
+
+# iOS / Xcode
+DerivedData/
+**/xcuserdata/
+**/*.xcuserstate
+**/.swiftpm/
