@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 
 const ROOT = process.cwd();
-const WORDBOOK_DIR = `${ROOT}/app/src/main/assets/wordbooks`;
+const WORDBOOK_DIR = `${ROOT}/android/app/src/main/assets/wordbooks`;
 const REQUIRED_BOOKS = ['cet4', 'cet6', 'ielts', 'toefl'];
 const MIN_COUNTS = {
   cet4: 200,

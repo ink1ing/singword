@@ -2,6 +2,7 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+ANDROID_DIR="$ROOT_DIR/android"
 MODE="${1:-device}"
 
 if [[ -z "${JAVA_HOME:-}" ]]; then
@@ -38,9 +39,9 @@ esac
 
 cd "$ROOT_DIR"
 
-./gradlew :app:assembleDebug :app:assembleDebugAndroidTest
+"$ANDROID_DIR/gradlew" -p "$ANDROID_DIR" :app:assembleDebug :app:assembleDebugAndroidTest
 
-"$ADB" install -r app/build/outputs/apk/debug/app-debug.apk
-"$ADB" install -r app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
+"$ADB" install -r "$ANDROID_DIR/app/build/outputs/apk/debug/app-debug.apk"
+"$ADB" install -r "$ANDROID_DIR/app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk"
 
 "$ADB" shell am instrument -w "${INSTRUMENT_ARGS[@]}" com.singword.app.test/androidx.test.runner.AndroidJUnitRunner

@@ -3,7 +3,7 @@ import vm from 'node:vm';
 
 const ROOT = process.cwd();
 const SOURCES_DIR = `${ROOT}/data/sources`;
-const ASSETS_DIR = `${ROOT}/app/src/main/assets/wordbooks`;
+const ASSETS_DIR = `${ROOT}/android/app/src/main/assets/wordbooks`;
 
 function normalizeWord(raw) {
   return String(raw || '')

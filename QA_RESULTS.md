@@ -32,10 +32,10 @@ Rebuild command verified:
 ## Build & Test Commands
 
 1. `node scripts/verify_wordbooks.mjs` -> PASS
-2. `./gradlew :app:assembleDebug` -> PASS
-3. `./gradlew :app:testDebugUnitTest --rerun-tasks` -> PASS
-4. `./gradlew :app:connectedDebugAndroidTest` -> PASS (`15 tests` on device)
-5. `./gradlew :app:assembleRelease` -> PASS
+2. `./android/gradlew -p android :app:assembleDebug` -> PASS
+3. `./android/gradlew -p android :app:testDebugUnitTest --rerun-tasks` -> PASS
+4. `./android/gradlew -p android :app:connectedDebugAndroidTest` -> PASS (`15 tests` on device)
+5. `./android/gradlew -p android :app:assembleRelease` -> PASS
 6. `./scripts/build_signed_release.sh` -> PASS (installable signed APK generated)
 
 ## Acceptance Scenario Coverage
@@ -52,7 +52,7 @@ Automated acceptance suite (`AcceptanceFlowTest`) passed on real device:
 8. Debug/Release build and release install/startup smoke -> PASS
 
 Reference report:
-- `app/build/outputs/androidTest-results/connected/debug/TEST-24090RA29G - 14-_app-.xml`
+- `android/app/build/outputs/androidTest-results/connected/debug/TEST-24090RA29G - 14-_app-.xml`
 
 ## Unit Test Coverage (`12/12`)
 
@@ -74,15 +74,15 @@ All passed with `failures=0` and `errors=0`.
 
 ## Release Artifacts
 
-- Unsigned: `app/build/outputs/apk/release/app-release-unsigned.apk`
-- Signed (installable): `app/build/outputs/apk/release/app-release.apk`
+- Unsigned: `android/app/build/outputs/apk/release/app-release-unsigned.apk`
+- Signed (installable): `android/app/build/outputs/apk/release/app-release.apk`
 - Signing mode used: `debug-keystore` (local QA mode)
 - SHA256 (`app-release.apk`):
   - `df25f387dd0e02c7ad02e9014fd58be9413897bbf3eeecd8675d1c94780d45b0`
 
 ## Runtime Smoke Check
 
-- `adb install -r app/build/outputs/apk/release/app-release.apk` -> PASS
+- `adb install -r android/app/build/outputs/apk/release/app-release.apk` -> PASS
 - `adb shell am start -W -n com.singword.app/.MainActivity` -> PASS
 - `adb shell monkey -p com.singword.app -c android.intent.category.LAUNCHER 1` -> PASS
 - Logcat scan: no `FATAL EXCEPTION` for `com.singword.app`.

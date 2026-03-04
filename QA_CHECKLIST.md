@@ -12,8 +12,8 @@
 
 ## Build Validation
 
-1. `./gradlew :app:assembleDebug` succeeds.
-2. `./gradlew :app:assembleRelease` succeeds.
+1. `./android/gradlew -p android :app:assembleDebug` succeeds.
+2. `./android/gradlew -p android :app:assembleRelease` succeeds.
 3. `./scripts/build_signed_release.sh` produces installable signed APK.
 4. Install release APK and launch app successfully.
 
@@ -21,4 +21,4 @@
 
 1. Real device stable run: `./scripts/run_android_tests.sh device` (skip `@EmulatorOnly` tests).
 2. Emulator full run: `./scripts/run_android_tests.sh emulator`.
-3. Gradle direct full run (optional): `./gradlew :app:connectedDebugAndroidTest -PincludeEmulatorOnlyTests=true`.
+3. Gradle direct full run (optional): `./android/gradlew -p android :app:connectedDebugAndroidTest -PincludeEmulatorOnlyTests=true`.

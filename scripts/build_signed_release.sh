@@ -2,6 +2,7 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+ANDROID_DIR="$ROOT_DIR/android"
 cd "$ROOT_DIR"
 
 if [[ -z "${JAVA_HOME:-}" && -d "/Applications/Android Studio.app/Contents/jbr/Contents/Home" ]]; then
@@ -18,9 +19,9 @@ find_sdk_dir() {
     echo "$ANDROID_SDK_ROOT"
     return
   fi
-  if [[ -f "local.properties" ]]; then
+  if [[ -f "$ANDROID_DIR/local.properties" ]]; then
     local sdk
-    sdk="$(awk -F= '/^sdk\.dir=/{print $2}' local.properties | sed 's#\\:#:#g' | tail -n1)"
+    sdk="$(awk -F= '/^sdk\.dir=/{print $2}' "$ANDROID_DIR/local.properties" | sed 's#\\:#:#g' | tail -n1)"
     if [[ -n "$sdk" ]]; then
       echo "$sdk"
       return
@@ -49,8 +50,8 @@ find_apksigner() {
 
 read_local_prop() {
   local key="$1"
-  if [[ -f "local.properties" ]]; then
-    awk -F= -v k="$key" '$1==k {print substr($0, index($0,$2))}' local.properties | tail -n1
+  if [[ -f "$ANDROID_DIR/local.properties" ]]; then
+    awk -F= -v k="$key" '$1==k {print substr($0, index($0,$2))}' "$ANDROID_DIR/local.properties" | tail -n1
   fi
 }
 
@@ -68,10 +69,10 @@ if [[ ! -x "$APKSIGNER" ]]; then
   exit 1
 fi
 
-./gradlew :app:assembleRelease
+"$ANDROID_DIR/gradlew" -p "$ANDROID_DIR" :app:assembleRelease
 
-UNSIGNED_APK="app/build/outputs/apk/release/app-release-unsigned.apk"
-SIGNED_APK="app/build/outputs/apk/release/app-release.apk"
+UNSIGNED_APK="$ANDROID_DIR/app/build/outputs/apk/release/app-release-unsigned.apk"
+SIGNED_APK="$ANDROID_DIR/app/build/outputs/apk/release/app-release.apk"
 
 if [[ ! -f "$UNSIGNED_APK" ]]; then
   echo "Unsigned APK not found: $UNSIGNED_APK"

@@ -6,7 +6,8 @@
 
 ```text
 .
-├─ app/                      # Android app module
+├─ android/                  # Android 工程（Gradle root）
+│  └─ app/                   # Android app module
 ├─ ios/                      # iOS (Swift 原生工程)
 ├─ data/sources/             # 词书来源与质量报告
 ├─ scripts/                  # 词书处理与测试脚本
@@ -121,11 +122,11 @@ node scripts/verify_wordbooks.mjs
 
 ```bash
 # 先复制本地配置（包含 sdk.dir 与可选 Genius 配置）
-cp local.properties.example local.properties
+cp android/local.properties.example android/local.properties
 
-./gradlew :app:assembleDebug
-./gradlew :app:testDebugUnitTest
-./gradlew :app:connectedDebugAndroidTest
+./android/gradlew -p android :app:assembleDebug
+./android/gradlew -p android :app:testDebugUnitTest
+./android/gradlew -p android :app:connectedDebugAndroidTest
 
 # 词表资产校验（计数/排序/重复/manifest 对齐）
 node scripts/verify_wordbooks.mjs
@@ -139,7 +140,7 @@ node scripts/verify_wordbooks.mjs
 # 全量 instrumentation（建议在模拟器）
 ./scripts/run_android_tests.sh emulator
 # 或者（Gradle 直跑）
-./gradlew :app:connectedDebugAndroidTest -PincludeEmulatorOnlyTests=true
+./android/gradlew -p android :app:connectedDebugAndroidTest -PincludeEmulatorOnlyTests=true
 ```
 
 ## iOS 本地开发（Swift 原生）
@@ -164,5 +165,5 @@ iOS 验收清单见：
 - Android：主流程、Room 收藏、词表切换、主歌词源（lrclib）已完成
 - iOS（Swift 原生）：主流程、候选选择、词汇匹配、收藏、设置、关于页已完成并可编译运行
 - 预留：Genius fallback（默认关闭）
-- 资源：Android 词表位于 `app/src/main/assets/wordbooks/`；iOS 词表位于 `ios/singword/Resources/wordbooks/`
+- 资源：Android 词表位于 `android/app/src/main/assets/wordbooks/`；iOS 词表位于 `ios/singword/Resources/wordbooks/`
 - 词书下载尝试记录：`data/sources/BOOK_DOWNLOAD_ATTEMPTS.md`

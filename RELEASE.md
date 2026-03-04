@@ -5,15 +5,15 @@
 ```bash
 ./scripts/refresh_wordbooks.sh
 node scripts/verify_wordbooks.mjs
-./gradlew :app:assembleDebug
-./gradlew :app:assembleRelease
+./android/gradlew -p android :app:assembleDebug
+./android/gradlew -p android :app:assembleRelease
 ./scripts/build_signed_release.sh
 ```
 
 Release artifacts:
 
-`app/build/outputs/apk/release/app-release-unsigned.apk`
-`app/build/outputs/apk/release/app-release.apk` (installable, signed by script)
+`android/app/build/outputs/apk/release/app-release-unsigned.apk`
+`android/app/build/outputs/apk/release/app-release.apk` (installable, signed by script)
 
 `build_signed_release.sh` will run `node scripts/verify_wordbooks.mjs` first when Node is available.
 
@@ -36,4 +36,4 @@ Release artifacts:
 ## Data Sources
 
 1. Lyrics primary source: `lrclib.net`.
-2. Wordbook source: bundled assets under `app/src/main/assets/wordbooks/`.
+2. Wordbook source: bundled assets under `android/app/src/main/assets/wordbooks/`.
