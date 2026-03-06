@@ -170,3 +170,4 @@ iOS 验收清单见：
 - 词书下载尝试记录：`data/sources/BOOK_DOWNLOAD_ATTEMPTS.md`
 - 双端行为规范：`docs/behavior-spec.md`
 - CI：`.github/workflows/ci.yml`
+- Android 手动 connected test：`.github/workflows/android-connected-tests.yml`
