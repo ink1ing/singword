@@ -1,0 +1,52 @@
+name: Android Smoke
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  smoke:
+    name: Android Acceptance Smoke
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Write local.properties
+        run: |
+          printf "sdk.dir=%s\n" "${ANDROID_HOME}" > android/local.properties
+
+      - name: Verify wordbooks
+        run: node scripts/verify_wordbooks.mjs
+
+      - name: Run Android smoke suite
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          arch: x86_64
+          profile: pixel_7
+          script: ./scripts/run_android_smoke.sh emulator
+
+      - name: Upload smoke test artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-smoke-artifacts
+          path: |
+            android/app/build/reports/androidTests/connected
+            android/app/build/outputs/androidTest-results/connected
+          if-no-files-found: warn

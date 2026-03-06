@@ -43,6 +43,8 @@ Reference behavior spec:
 2. Emulator full run: `./scripts/run_android_tests.sh emulator`.
 3. Gradle direct full run (optional): `./android/gradlew -p android :app:connectedDebugAndroidTest -PincludeEmulatorOnlyTests=true`.
 4. GitHub manual full run: `Android Connected Tests` workflow.
+5. Android smoke run: `./scripts/run_android_smoke.sh device|emulator`.
+6. GitHub automatic smoke run: `Android Smoke` workflow.
 
 ## Release Gate
 

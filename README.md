@@ -171,3 +171,4 @@ iOS 验收清单见：
 - 双端行为规范：`docs/behavior-spec.md`
 - CI：`.github/workflows/ci.yml`
 - Android 手动 connected test：`.github/workflows/android-connected-tests.yml`
+- Android 自动冒烟：`.github/workflows/android-smoke.yml`
