@@ -10,6 +10,7 @@
 │  └─ app/                   # Android app module
 ├─ ios/                      # iOS (Swift 原生工程)
 ├─ data/sources/             # 词书来源与质量报告
+├─ docs/                     # 跨端行为规范等文档
 ├─ scripts/                  # 词书处理与测试脚本
 ├─ QA_CHECKLIST.md           # Android 验收清单
 ├─ IOS_QA_CHECKLIST.md       # iOS 验收清单
@@ -167,3 +168,5 @@ iOS 验收清单见：
 - 预留：Genius fallback（默认关闭）
 - 资源：Android 词表位于 `android/app/src/main/assets/wordbooks/`；iOS 词表位于 `ios/singword/Resources/wordbooks/`
 - 词书下载尝试记录：`data/sources/BOOK_DOWNLOAD_ATTEMPTS.md`
+- 双端行为规范：`docs/behavior-spec.md`
+- CI：`.github/workflows/ci.yml`
