@@ -9,7 +9,7 @@ final class SettingsRepository {
     private let defaults: UserDefaults
     private let themeModeKey = "theme_mode"
 
-    init(defaults: UserDefaults = .standard) {
+    init(defaults: UserDefaults = SingWordShared.sharedDefaults() ?? .standard) {
         self.defaults = defaults
     }
 

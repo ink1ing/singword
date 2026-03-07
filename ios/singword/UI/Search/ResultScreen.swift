@@ -3,7 +3,9 @@ import SwiftUI
 struct ResultScreen: View {
     let uiState: SearchUiState
     let favorites: Set<String>
+    let isDownloaded: Bool
     let onToggleFavorite: (MatchedWord) -> Void
+    let onDownload: () -> Void
     let onRetry: () -> Void
 
     @Environment(\.colorScheme) private var colorScheme
@@ -34,7 +36,9 @@ struct ResultScreen: View {
                             artistName: uiState.artistName,
                             provider: uiState.provider,
                             matchCount: uiState.matchedWords.count,
-                            totalTokens: uiState.totalTokens
+                            totalTokens: uiState.totalTokens,
+                            isDownloaded: isDownloaded,
+                            onDownload: onDownload
                         )
 
                         Text("命中词汇 (\(uiState.matchedWords.count))")
@@ -77,6 +81,8 @@ private struct SongInfoCard: View {
     let provider: String
     let matchCount: Int
     let totalTokens: Int
+    let isDownloaded: Bool
+    let onDownload: () -> Void
 
     @Environment(\.colorScheme) private var colorScheme
 
@@ -98,6 +104,16 @@ private struct SongInfoCard: View {
             Text("来源：\(provider) | 共 \(totalTokens) 个单词，命中 \(matchCount) 个")
                 .font(SingWordTypography.labelMedium)
                 .foregroundStyle(.secondary)
+
+            Button(action: onDownload) {
+                HStack(spacing: 8) {
+                    Image(systemName: isDownloaded ? "arrow.down.circle.fill" : "arrow.down.circle")
+                    Text(isDownloaded ? "已下载" : "下载到收藏")
+                        .font(SingWordTypography.bodyMedium)
+                }
+                .foregroundStyle(primaryColor)
+            }
+            .buttonStyle(.plain)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(16)

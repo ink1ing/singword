@@ -1,6 +1,9 @@
 package com.singword.app.data.remote
 
+import android.util.Log
+import com.singword.app.BuildConfig
 import java.io.IOException
+import java.net.Proxy
 import java.util.concurrent.TimeUnit
 import okhttp3.OkHttpClient
 import retrofit2.HttpException
@@ -12,6 +15,7 @@ class LrclibLyricsDataSource : LyricsDataSource, LyricsCandidateDataSource {
 
     private val api: LrclibApi by lazy {
         val client = OkHttpClient.Builder()
+            .proxy(Proxy.NO_PROXY)
             .connectTimeout(10, TimeUnit.SECONDS)
             .readTimeout(10, TimeUnit.SECONDS)
             .addInterceptor { chain ->
@@ -76,10 +80,19 @@ class LrclibLyricsDataSource : LyricsDataSource, LyricsCandidateDataSource {
                 )
             }
         } catch (e: IOException) {
+            if (BuildConfig.DEBUG) {
+                Log.e("SingWord/Lrclib", "Network failure while searching lrclib for \"$query\"", e)
+            }
             LyricsCandidateResult.NetworkError("网络异常，请检查连接后重试")
         } catch (e: HttpException) {
+            if (BuildConfig.DEBUG) {
+                Log.e("SingWord/Lrclib", "HTTP ${e.code()} while searching lrclib for \"$query\"", e)
+            }
             LyricsCandidateResult.ProviderError(providerName, "歌词服务异常（HTTP ${e.code()}）")
         } catch (e: Exception) {
+            if (BuildConfig.DEBUG) {
+                Log.e("SingWord/Lrclib", "Unexpected failure while searching lrclib for \"$query\"", e)
+            }
             LyricsCandidateResult.ProviderError(providerName, e.message ?: "歌词服务异常")
         }
     }

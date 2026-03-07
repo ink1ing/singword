@@ -15,6 +15,7 @@ struct SearchFlowView: View {
                 query: viewModel.uiState.query,
                 isLoading: viewModel.uiState.isLoading,
                 error: viewModel.uiState.error,
+                recentSearches: viewModel.recentSearches,
                 onQueryChange: {
                     viewModel.onQueryChanged($0)
                     viewModel.clearError()
@@ -26,6 +27,10 @@ struct SearchFlowView: View {
                     if viewModel.searchCandidates() {
                         path = [.candidates]
                     }
+                },
+                onTapRecentSearch: { snapshot in
+                    viewModel.loadRecentSearch(snapshot)
+                    path = [.result]
                 }
             )
             .navigationTitle("搜索")
@@ -47,8 +52,12 @@ struct SearchFlowView: View {
                     ResultScreen(
                         uiState: viewModel.uiState,
                         favorites: viewModel.favoriteWords,
+                        isDownloaded: viewModel.isCurrentSongDownloaded(),
                         onToggleFavorite: { word in
                             viewModel.toggleFavorite(word)
+                        },
+                        onDownload: {
+                            viewModel.downloadCurrentSong()
                         },
                         onRetry: {
                             viewModel.retryResult()

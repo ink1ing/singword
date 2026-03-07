@@ -1,8 +1,8 @@
 import Foundation
 
-actor FavoriteRepository {
+actor DownloadedSongRepository {
     private let fileURL: URL
-    private var cache: [FavoriteWord]?
+    private var cache: [SongMatchSnapshot]?
 
     init(fileManager: FileManager = .default) {
         let fallbackRoot = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask).first
@@ -12,34 +12,30 @@ actor FavoriteRepository {
 
         let directory = SingWordShared.ensureSharedDirectory(fileManager: fileManager) ?? fallbackDirectory
         try? fileManager.createDirectory(at: directory, withIntermediateDirectories: true)
-        self.fileURL = directory.appendingPathComponent(SingWordShared.favoritesFileName)
+        self.fileURL = directory.appendingPathComponent(SingWordShared.downloadedSongsFileName)
     }
 
-    func getAllFavorites() -> [FavoriteWord] {
-        let favorites = loadIfNeeded()
-        return favorites.sorted { $0.timestamp > $1.timestamp }
+    func getAll() -> [SongMatchSnapshot] {
+        loadIfNeeded()
+            .sorted { $0.timestamp > $1.timestamp }
     }
 
-    func getAllFavoriteWords() -> Set<String> {
-        Set(getAllFavorites().map { $0.word })
+    func upsert(_ snapshot: SongMatchSnapshot) {
+        var items = loadIfNeeded()
+        items.removeAll { $0.id == snapshot.id }
+        items.append(snapshot)
+        cache = items
+        persist(items)
     }
 
-    func upsert(_ word: FavoriteWord) {
-        var favorites = loadIfNeeded()
-        favorites.removeAll { $0.word == word.word }
-        favorites.append(word)
-        cache = favorites
-        persist(favorites)
+    func delete(_ snapshot: SongMatchSnapshot) {
+        var items = loadIfNeeded()
+        items.removeAll { $0.id == snapshot.id }
+        cache = items
+        persist(items)
     }
 
-    func delete(_ word: FavoriteWord) {
-        var favorites = loadIfNeeded()
-        favorites.removeAll { $0.word == word.word }
-        cache = favorites
-        persist(favorites)
-    }
-
-    private func loadIfNeeded() -> [FavoriteWord] {
+    private func loadIfNeeded() -> [SongMatchSnapshot] {
         if let cache {
             return cache
         }
@@ -49,15 +45,15 @@ actor FavoriteRepository {
             return []
         }
 
-        let decoded = (try? JSONDecoder().decode([FavoriteWord].self, from: data)) ?? []
+        let decoded = (try? JSONDecoder().decode([SongMatchSnapshot].self, from: data)) ?? []
         cache = decoded
         return decoded
     }
 
-    private func persist(_ favorites: [FavoriteWord]) {
+    private func persist(_ items: [SongMatchSnapshot]) {
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
-        if let data = try? encoder.encode(favorites) {
+        if let data = try? encoder.encode(items) {
             try? data.write(to: fileURL, options: .atomic)
         }
     }

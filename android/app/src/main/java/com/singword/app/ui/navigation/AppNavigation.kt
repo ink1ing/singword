@@ -19,6 +19,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -47,6 +48,7 @@ import com.singword.app.ui.settings.AboutSingWordScreen
 import com.singword.app.ui.settings.SettingsScreen
 import com.singword.app.ui.settings.SettingsViewModel
 import com.singword.app.ui.theme.SingWordTheme
+import com.singword.app.widget.SingWordWidgetProvider
 
 object AppRoute {
     const val Search = "search"
@@ -85,6 +87,7 @@ fun AppNavigation() {
     val settingsViewModel: SettingsViewModel = viewModel(factory = factory)
     val searchUiState by searchViewModel.uiState.collectAsState()
     val favoriteWords by searchViewModel.favoriteWords.collectAsState()
+    val recentSearches by searchViewModel.recentSearches.collectAsState()
     val settingsUiState by settingsViewModel.uiState.collectAsState()
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -92,6 +95,10 @@ fun AppNavigation() {
     val showBottomBar = currentDestination?.route != AppRoute.Result &&
         currentDestination?.route != AppRoute.Candidates &&
         currentDestination?.route != AppRoute.About
+
+    LaunchedEffect(settingsUiState.themeMode) {
+        SingWordWidgetProvider.updateAll(context)
+    }
 
     SingWordTheme(themeMode = settingsUiState.themeMode) {
         Scaffold(
@@ -152,6 +159,7 @@ fun AppNavigation() {
                     SearchScreen(
                         query = searchUiState.query,
                         error = searchUiState.error,
+                        recentSearches = recentSearches,
                         onQueryChange = {
                             searchViewModel.onQueryChanged(it)
                             searchViewModel.clearError()
@@ -160,6 +168,10 @@ fun AppNavigation() {
                             if (searchViewModel.searchCandidates()) {
                                 navController.navigate(AppRoute.Candidates)
                             }
+                        },
+                        onOpenRecentSearch = { snapshot ->
+                            searchViewModel.loadSnapshot(snapshot)
+                            navController.navigate(AppRoute.Result)
                         }
                     )
                 }
@@ -178,13 +190,21 @@ fun AppNavigation() {
                     ResultScreen(
                         uiState = searchUiState,
                         favorites = favoriteWords,
+                        isDownloaded = searchViewModel.isCurrentSongDownloaded(),
                         onToggleFavorite = searchViewModel::toggleFavorite,
+                        onDownload = searchViewModel::downloadCurrentSong,
                         onBack = { navController.popBackStack() },
                         onRetry = searchViewModel::retryResult
                     )
                 }
                 composable(AppRoute.Favorites) {
-                    FavoritesScreen(viewModel = favoritesViewModel)
+                    FavoritesScreen(
+                        viewModel = favoritesViewModel,
+                        onOpenSong = { snapshot ->
+                            searchViewModel.loadSnapshot(snapshot)
+                            navController.navigate(AppRoute.Result)
+                        }
+                    )
                 }
                 composable(AppRoute.Settings) {
                     SettingsScreen(

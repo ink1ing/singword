@@ -4,8 +4,10 @@ struct SearchScreen: View {
     let query: String
     let isLoading: Bool
     let error: String?
+    let recentSearches: [SongMatchSnapshot]
     let onQueryChange: (String) -> Void
     let onSubmit: () -> Void
+    let onTapRecentSearch: (SongMatchSnapshot) -> Void
 
     @Environment(\.colorScheme) private var colorScheme
 
@@ -61,6 +63,40 @@ struct SearchScreen: View {
                 Text(error)
                     .font(SingWordTypography.bodyMedium)
                     .foregroundStyle(Color.singWordError)
+            }
+
+            if !recentSearches.isEmpty {
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("最近搜索")
+                        .font(SingWordTypography.titleMedium)
+                        .foregroundStyle(textSecondary)
+
+                    ForEach(recentSearches.prefix(3)) { item in
+                        Button {
+                            onTapRecentSearch(item)
+                        } label: {
+                            HStack(spacing: 10) {
+                                Image(systemName: "clock.arrow.circlepath")
+                                    .foregroundStyle(primaryColor)
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text(item.trackName)
+                                        .font(SingWordTypography.titleMedium)
+                                        .foregroundStyle(textPrimary)
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                    Text(item.artistName.isEmpty ? "离线结果" : item.artistName)
+                                        .font(SingWordTypography.bodyMedium)
+                                        .foregroundStyle(textSecondary)
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                }
+                            }
+                            .padding(14)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .background(surfaceVariant)
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
             }
 
             Spacer()

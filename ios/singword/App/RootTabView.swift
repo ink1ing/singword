@@ -15,12 +15,18 @@ struct RootTabView: View {
                 lyricsRepository: appModel.lyricsRepository,
                 wordbookRepository: appModel.wordbookRepository,
                 settingsRepository: appModel.settingsRepository,
-                favoritesStore: appModel.favoritesStore
+                favoritesStore: appModel.favoritesStore,
+                recentSearchStore: appModel.recentSearchStore,
+                downloadedSongsStore: appModel.downloadedSongsStore,
+                widgetSnapshotStore: appModel.widgetSnapshotStore
             )
         )
 
         _favoritesViewModel = StateObject(
-            wrappedValue: FavoritesViewModel(favoritesStore: appModel.favoritesStore)
+            wrappedValue: FavoritesViewModel(
+                favoritesStore: appModel.favoritesStore,
+                downloadedSongsStore: appModel.downloadedSongsStore
+            )
         )
 
         _settingsViewModel = StateObject(
@@ -40,7 +46,13 @@ struct RootTabView: View {
                     Label("搜索", systemImage: "magnifyingglass")
                 }
 
-            FavoritesFlowView(viewModel: favoritesViewModel)
+            FavoritesFlowView(
+                viewModel: favoritesViewModel,
+                favoriteWords: searchViewModel.favoriteWords,
+                onToggleFavorite: { word in
+                    searchViewModel.toggleFavorite(word)
+                }
+            )
                 .tabItem {
                     Label("收藏", systemImage: "heart")
                 }

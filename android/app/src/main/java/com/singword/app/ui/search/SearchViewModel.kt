@@ -5,6 +5,10 @@ import androidx.lifecycle.viewModelScope
 import com.singword.app.data.local.db.FavoriteRepository
 import com.singword.app.data.local.db.FavoriteWord
 import com.singword.app.data.local.prefs.SettingsRepository
+import com.singword.app.data.local.song.DownloadedSongRepository
+import com.singword.app.data.local.song.RecentSearchRepository
+import com.singword.app.data.local.song.SongMatchSnapshot
+import com.singword.app.data.local.widget.WidgetSnapshotStore
 import com.singword.app.data.local.wordbook.WordEntry
 import com.singword.app.data.local.wordbook.WordbookLoadResult
 import com.singword.app.data.local.wordbook.WordbookRepository
@@ -20,6 +24,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -56,13 +61,23 @@ class SearchViewModel(
     private val lyricsRepository: LyricsRepository,
     private val wordbookRepository: WordbookRepository,
     private val settingsRepository: SettingsRepository,
-    private val favoriteRepository: FavoriteRepository
+    private val favoriteRepository: FavoriteRepository,
+    private val recentSearchRepository: RecentSearchRepository,
+    private val downloadedSongRepository: DownloadedSongRepository,
+    private val widgetSnapshotStore: WidgetSnapshotStore
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SearchUiState())
     val uiState: StateFlow<SearchUiState> = _uiState.asStateFlow()
 
     val favoriteWords: StateFlow<Set<String>> = favoriteRepository.getAllFavoriteWords()
+        .map { it.toSet() }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptySet())
+
+    val recentSearches: StateFlow<List<SongMatchSnapshot>> = recentSearchRepository.getAll()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+
+    val downloadedSongIds: StateFlow<Set<String>> = downloadedSongRepository.getAllIds()
         .map { it.toSet() }
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptySet())
 
@@ -247,6 +262,38 @@ class SearchViewModel(
         }
     }
 
+    fun loadSnapshot(snapshot: SongMatchSnapshot) {
+        widgetSnapshotStore.save(snapshot)
+        _uiState.update {
+            it.copy(
+                query = snapshot.trackName,
+                isLoading = false,
+                trackName = snapshot.trackName,
+                artistName = snapshot.artistName,
+                provider = snapshot.provider,
+                candidates = emptyList(),
+                selectedCandidate = null,
+                matchedWords = snapshot.toMatchedWords(),
+                totalTokens = snapshot.totalTokens,
+                isEmptyResult = snapshot.matchedWords.isEmpty(),
+                error = null,
+                errorCode = SearchErrorCode.NONE
+            )
+        }
+    }
+
+    fun downloadCurrentSong() {
+        val snapshot = currentSnapshot() ?: return
+        viewModelScope.launch(Dispatchers.IO) {
+            downloadedSongRepository.upsert(snapshot)
+        }
+    }
+
+    fun isCurrentSongDownloaded(): Boolean {
+        val snapshot = currentSnapshot() ?: return false
+        return snapshot.id in downloadedSongIds.value
+    }
+
     private fun loadEnabledWordbooksOrError(): Map<String, Pair<WordEntry, String>>? {
         val enabled = settingsRepository.getEnabledWordbooks()
         if (enabled.isEmpty()) {
@@ -296,6 +343,17 @@ class SearchViewModel(
 
         val tokens = LyricsProcessor.tokenize(candidate.lyrics)
         val matched = VocabMatcher.match(tokens, wordbooks)
+        val snapshot = SongMatchSnapshot.fromMatchedWords(
+            trackName = candidate.trackName,
+            artistName = candidate.artistName,
+            provider = candidate.provider,
+            totalTokens = tokens.size,
+            matchedWords = matched
+        )
+        widgetSnapshotStore.save(snapshot)
+        viewModelScope.launch(Dispatchers.IO) {
+            recentSearchRepository.upsert(snapshot)
+        }
         _uiState.update {
             it.copy(
                 isLoading = false,
@@ -320,5 +378,17 @@ class SearchViewModel(
                 errorCode = code
             )
         }
+    }
+
+    private fun currentSnapshot(): SongMatchSnapshot? {
+        val state = _uiState.value
+        if (state.trackName.isBlank() || state.matchedWords.isEmpty()) return null
+        return SongMatchSnapshot.fromMatchedWords(
+            trackName = state.trackName,
+            artistName = state.artistName,
+            provider = state.provider,
+            totalTokens = state.totalTokens,
+            matchedWords = state.matchedWords
+        )
     }
 }

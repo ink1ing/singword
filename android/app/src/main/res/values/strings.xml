@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">SingWord</string>
+    <string name="widget_description">展示最近一次歌词匹配中的高频词</string>
 </resources>

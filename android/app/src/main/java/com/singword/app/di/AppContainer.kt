@@ -6,6 +6,9 @@ import com.singword.app.data.local.db.AppDatabase
 import com.singword.app.data.local.db.FavoriteRepository
 import com.singword.app.data.local.prefs.PrefsManager
 import com.singword.app.data.local.prefs.SettingsRepository
+import com.singword.app.data.local.song.DownloadedSongRepository
+import com.singword.app.data.local.song.RecentSearchRepository
+import com.singword.app.data.local.widget.WidgetSnapshotStore
 import com.singword.app.data.local.wordbook.WordbookRepository
 import com.singword.app.data.remote.GeniusLyricsDataSource
 import com.singword.app.data.remote.LrclibLyricsDataSource
@@ -20,6 +23,9 @@ class AppContainer(context: Context) {
 
     private val appDatabase = AppDatabase.getInstance(appContext)
     val favoriteRepository = FavoriteRepository(appDatabase.favoriteDao())
+    val recentSearchRepository = RecentSearchRepository(appDatabase.recentSearchDao())
+    val downloadedSongRepository = DownloadedSongRepository(appDatabase.downloadedSongDao())
+    val widgetSnapshotStore = WidgetSnapshotStore(appContext)
 
     val wordbookRepository = WordbookRepository(appContext)
 

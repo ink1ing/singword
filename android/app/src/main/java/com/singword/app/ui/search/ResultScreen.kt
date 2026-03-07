@@ -21,6 +21,8 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.MusicNote
+import androidx.compose.material.icons.filled.Download
+import androidx.compose.material.icons.filled.DownloadDone
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -47,7 +49,9 @@ import com.singword.app.ui.theme.TagTOEFL
 fun ResultScreen(
     uiState: SearchUiState,
     favorites: Set<String>,
+    isDownloaded: Boolean,
     onToggleFavorite: (MatchedWord) -> Unit,
+    onDownload: () -> Unit,
     onBack: () -> Unit,
     onRetry: () -> Unit
 ) {
@@ -111,7 +115,9 @@ fun ResultScreen(
                             artistName = uiState.artistName,
                             provider = uiState.provider,
                             matchCount = uiState.matchedWords.size,
-                            totalTokens = uiState.totalTokens
+                            totalTokens = uiState.totalTokens,
+                            isDownloaded = isDownloaded,
+                            onDownload = onDownload
                         )
                     }
 
@@ -148,7 +154,9 @@ private fun SongInfoCard(
     artistName: String,
     provider: String,
     matchCount: Int,
-    totalTokens: Int
+    totalTokens: Int,
+    isDownloaded: Boolean,
+    onDownload: () -> Unit
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -185,6 +193,24 @@ private fun SongInfoCard(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(start = 28.dp)
             )
+            Spacer(modifier = Modifier.height(10.dp))
+            Row(
+                modifier = Modifier.padding(start = 28.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(onClick = onDownload) {
+                    Icon(
+                        imageVector = if (isDownloaded) Icons.Default.DownloadDone else Icons.Default.Download,
+                        contentDescription = if (isDownloaded) "已下载" else "下载到收藏",
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
+                Text(
+                    text = if (isDownloaded) "已下载" else "下载到收藏",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
         }
     }
 }

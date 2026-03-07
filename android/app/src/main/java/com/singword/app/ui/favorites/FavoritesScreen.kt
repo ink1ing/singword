@@ -1,6 +1,7 @@
 package com.singword.app.ui.favorites
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,11 +19,12 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.DownloadDone
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -42,6 +44,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.singword.app.data.local.db.FavoriteWord
+import com.singword.app.data.local.song.SongMatchSnapshot
 import com.singword.app.ui.theme.ErrorRed
 import com.singword.app.ui.theme.TagCET4
 import com.singword.app.ui.theme.TagCET6
@@ -52,8 +55,12 @@ import java.util.Date
 import java.util.Locale
 
 @Composable
-fun FavoritesScreen(viewModel: FavoritesViewModel) {
+fun FavoritesScreen(
+    viewModel: FavoritesViewModel,
+    onOpenSong: (SongMatchSnapshot) -> Unit
+) {
     val favorites by viewModel.favorites.collectAsState()
+    val songs by viewModel.downloadedSongs.collectAsState()
 
     Column(
         modifier = Modifier
@@ -76,17 +83,11 @@ fun FavoritesScreen(viewModel: FavoritesViewModel) {
                 style = MaterialTheme.typography.headlineLarge,
                 color = MaterialTheme.colorScheme.onBackground
             )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = "(${favorites.size})",
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        if (favorites.isEmpty()) {
+        if (songs.isEmpty() && favorites.isEmpty()) {
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
@@ -108,13 +109,123 @@ fun FavoritesScreen(viewModel: FavoritesViewModel) {
             }
         } else {
             LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
                 contentPadding = PaddingValues(bottom = 80.dp)
             ) {
-                items(favorites, key = { it.word }) { word ->
-                    FavoriteWordCard(
-                        word = word,
-                        onDelete = { viewModel.removeFavorite(word) }
+                if (songs.isNotEmpty()) {
+                    item {
+                        Text(
+                            text = "歌曲",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    items(songs, key = { it.id }) { song ->
+                        FavoriteSongCard(
+                            song = song,
+                            onOpen = { onOpenSong(song) },
+                            onDelete = { viewModel.removeDownloadedSong(song) }
+                        )
+                    }
+                }
+
+                if (favorites.isNotEmpty()) {
+                    item {
+                        Text(
+                            text = "单词",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    items(favorites, key = { it.word }) { word ->
+                        FavoriteWordCard(
+                            word = word,
+                            onDelete = { viewModel.removeFavorite(word) }
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+@OptIn(ExperimentalMaterial3Api::class)
+private fun FavoriteSongCard(
+    song: SongMatchSnapshot,
+    onOpen: () -> Unit,
+    onDelete: () -> Unit
+) {
+    val dismissState = rememberSwipeToDismissBoxState()
+
+    if (dismissState.currentValue == SwipeToDismissBoxValue.EndToStart) {
+        LaunchedEffect(Unit) { onDelete() }
+    }
+
+    SwipeToDismissBox(
+        state = dismissState,
+        enableDismissFromStartToEnd = false,
+        backgroundContent = {
+            val color = if (dismissState.targetValue == SwipeToDismissBoxValue.EndToStart) {
+                ErrorRed
+            } else {
+                Color.Transparent
+            }
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(color)
+                    .padding(end = 20.dp),
+                contentAlignment = Alignment.CenterEnd
+            ) {
+                Icon(
+                    Icons.Default.Delete,
+                    contentDescription = "删除",
+                    tint = MaterialTheme.colorScheme.onError
+                )
+            }
+        }
+    ) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable(onClick = onOpen),
+            shape = RoundedCornerShape(12.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 14.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = song.trackName,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = if (song.artistName.isBlank()) "未知艺人" else song.artistName,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "离线词汇 ${song.matchedWords.size} 个",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+
+                IconButton(onClick = onDelete) {
+                    Icon(
+                        Icons.Default.Delete,
+                        contentDescription = "删除",
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }

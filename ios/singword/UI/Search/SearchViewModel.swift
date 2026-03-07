@@ -32,11 +32,16 @@ struct SearchUiState {
 final class SearchViewModel: ObservableObject {
     @Published private(set) var uiState = SearchUiState()
     @Published private(set) var favoriteWords: Set<String> = []
+    @Published private(set) var recentSearches: [SongMatchSnapshot] = []
+    @Published private(set) var downloadedSongIDs: Set<String> = []
 
     private let lyricsRepository: LyricsRepository
     private let wordbookRepository: WordbookRepository
     private let settingsRepository: SettingsRepository
     private let favoritesStore: FavoritesStore
+    private let recentSearchStore: RecentSearchStore
+    private let downloadedSongsStore: DownloadedSongsStore
+    private let widgetSnapshotStore: WidgetSnapshotStore
     private var cancellables: Set<AnyCancellable> = []
     private var activeTask: Task<Void, Never>?
 
@@ -44,16 +49,34 @@ final class SearchViewModel: ObservableObject {
         lyricsRepository: LyricsRepository,
         wordbookRepository: WordbookRepository,
         settingsRepository: SettingsRepository,
-        favoritesStore: FavoritesStore
+        favoritesStore: FavoritesStore,
+        recentSearchStore: RecentSearchStore,
+        downloadedSongsStore: DownloadedSongsStore,
+        widgetSnapshotStore: WidgetSnapshotStore
     ) {
         self.lyricsRepository = lyricsRepository
         self.wordbookRepository = wordbookRepository
         self.settingsRepository = settingsRepository
         self.favoritesStore = favoritesStore
+        self.recentSearchStore = recentSearchStore
+        self.downloadedSongsStore = downloadedSongsStore
+        self.widgetSnapshotStore = widgetSnapshotStore
 
         favoritesStore.$favoriteWords
             .sink { [weak self] words in
                 self?.favoriteWords = words
+            }
+            .store(in: &cancellables)
+
+        recentSearchStore.$items
+            .sink { [weak self] items in
+                self?.recentSearches = items
+            }
+            .store(in: &cancellables)
+
+        downloadedSongsStore.$songIDs
+            .sink { [weak self] ids in
+                self?.downloadedSongIDs = ids
             }
             .store(in: &cancellables)
     }
@@ -165,6 +188,39 @@ final class SearchViewModel: ObservableObject {
         }
     }
 
+    func loadRecentSearch(_ snapshot: SongMatchSnapshot) {
+        activeTask?.cancel()
+        uiState.isLoading = false
+        uiState.query = snapshot.trackName
+        uiState.trackName = snapshot.trackName
+        uiState.artistName = snapshot.artistName
+        uiState.provider = snapshot.provider
+        uiState.candidates = []
+        uiState.selectedCandidate = nil
+        uiState.matchedWords = snapshot.matchedWordItems
+        uiState.totalTokens = snapshot.totalTokens
+        uiState.isEmptyResult = snapshot.matchedWords.isEmpty
+        uiState.error = nil
+        uiState.errorCode = .none
+    }
+
+    func downloadCurrentSong() {
+        guard let snapshot = makeCurrentSnapshot() else {
+            return
+        }
+
+        Task {
+            await downloadedSongsStore.save(snapshot)
+        }
+    }
+
+    func isCurrentSongDownloaded() -> Bool {
+        guard let snapshot = makeCurrentSnapshot() else {
+            return false
+        }
+        return downloadedSongIDs.contains(snapshot.id)
+    }
+
     private func loadEnabledWordbooksOrError() async -> [String: (WordEntry, String)]? {
         let enabled = settingsRepository.getEnabledWordbooks()
         if enabled.isEmpty {
@@ -220,6 +276,20 @@ final class SearchViewModel: ObservableObject {
         uiState.isEmptyResult = matchedWords.isEmpty
         uiState.error = nil
         uiState.errorCode = .none
+
+        let snapshot = SongMatchSnapshot(
+            trackName: candidate.trackName,
+            artistName: candidate.artistName,
+            provider: candidate.provider,
+            totalTokens: tokens.count,
+            matchedWords: matchedWords
+        )
+        await recentSearchStore.record(snapshot)
+        await widgetSnapshotStore.save(
+            trackName: candidate.trackName,
+            artistName: candidate.artistName,
+            matchedWords: matchedWords
+        )
     }
 
     private func resetForNewSearch() {
@@ -248,5 +318,19 @@ final class SearchViewModel: ObservableObject {
             guard self != nil else { return }
             await operation()
         }
+    }
+
+    private func makeCurrentSnapshot() -> SongMatchSnapshot? {
+        guard !uiState.trackName.isEmpty, !uiState.matchedWords.isEmpty else {
+            return nil
+        }
+
+        return SongMatchSnapshot(
+            trackName: uiState.trackName,
+            artistName: uiState.artistName,
+            provider: uiState.provider,
+            totalTokens: uiState.totalTokens,
+            matchedWords: uiState.matchedWords
+        )
     }
 }

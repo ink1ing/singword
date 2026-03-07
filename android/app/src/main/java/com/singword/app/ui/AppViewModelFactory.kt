@@ -18,11 +18,17 @@ class AppViewModelFactory(
                     lyricsRepository = container.lyricsRepository,
                     wordbookRepository = container.wordbookRepository,
                     settingsRepository = container.settingsRepository,
-                    favoriteRepository = container.favoriteRepository
+                    favoriteRepository = container.favoriteRepository,
+                    recentSearchRepository = container.recentSearchRepository,
+                    downloadedSongRepository = container.downloadedSongRepository,
+                    widgetSnapshotStore = container.widgetSnapshotStore
                 ) as T
             }
             modelClass.isAssignableFrom(FavoritesViewModel::class.java) -> {
-                FavoritesViewModel(container.favoriteRepository) as T
+                FavoritesViewModel(
+                    favoriteRepository = container.favoriteRepository,
+                    downloadedSongRepository = container.downloadedSongRepository
+                ) as T
             }
             modelClass.isAssignableFrom(SettingsViewModel::class.java) -> {
                 SettingsViewModel(container.settingsRepository) as T
