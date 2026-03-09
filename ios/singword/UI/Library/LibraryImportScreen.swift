@@ -3,6 +3,7 @@ import SwiftUI
 struct LibraryImportScreen: View {
     @ObservedObject var viewModel: LibraryImportStore
     @Environment(\.dismiss) private var dismiss
+    @State private var showResetConfirmation = false
 
     var body: some View {
         ScrollView {
@@ -26,6 +27,14 @@ struct LibraryImportScreen: View {
                     }
                 }
             }
+        }
+        .alert("清除所有导入记录？", isPresented: $showResetConfirmation) {
+            Button("清除并重新导入", role: .destructive) {
+                viewModel.resetAllData()
+            }
+            Button("取消", role: .cancel) {}
+        } message: {
+            Text("将清除所有已保存的导入记录和匹配结果，下次导入将从零开始重新处理所有歌曲。")
         }
     }
 
@@ -104,6 +113,14 @@ struct LibraryImportScreen: View {
                 Text("当前已保存 \(viewModel.tracks.count) 首导入歌曲。")
                     .font(SingWordTypography.bodyMedium)
                     .foregroundStyle(.secondary)
+
+                if !viewModel.progress.isRunning {
+                    Button("清除记录并重新导入") {
+                        showResetConfirmation = true
+                    }
+                    .font(SingWordTypography.bodyMedium)
+                    .foregroundStyle(.red)
+                }
             }
         }
     }

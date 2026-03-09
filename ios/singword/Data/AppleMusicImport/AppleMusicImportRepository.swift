@@ -69,6 +69,13 @@ actor AppleMusicImportRepository {
         persistMatches(matches)
     }
 
+    func removeAll() {
+        trackCache = []
+        matchCache = []
+        persistTracks([])
+        persistMatches([])
+    }
+
     private func loadTracksIfNeeded() -> [ImportedTrack] {
         if let trackCache {
             return trackCache

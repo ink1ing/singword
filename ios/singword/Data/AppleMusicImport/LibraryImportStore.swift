@@ -153,6 +153,19 @@ final class LibraryImportStore: ObservableObject {
         matches[trackID]
     }
 
+    func resetAllData() {
+        guard !progress.isRunning else { return }
+        importTask?.cancel()
+        importTask = nil
+        tracks = []
+        matches = [:]
+        progress = .idle
+        Task {
+            await importRepository.removeAll()
+            await stateRepository.save(.idle)
+        }
+    }
+
     private var shouldResumeExistingQueue: Bool {
         tracks.contains { track in
             track.status == .queued ||
