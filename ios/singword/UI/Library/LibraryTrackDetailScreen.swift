@@ -1,0 +1,123 @@
+import SwiftUI
+
+struct LibraryTrackDetailScreen: View {
+    let track: ImportedTrack
+    let match: ImportedTrackMatch?
+    let favoriteWords: Set<String>
+    let onToggleFavorite: (MatchedWord) -> Void
+    let onRetry: () -> Void
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 12) {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text(track.title)
+                        .font(SingWordTypography.titleLarge)
+                    if !track.artistName.isEmpty {
+                        Text(track.artistName)
+                            .font(SingWordTypography.bodyMedium)
+                            .foregroundStyle(.secondary)
+                    }
+                    if !track.albumTitle.isEmpty {
+                        Text(track.albumTitle)
+                            .font(SingWordTypography.labelMedium)
+                            .foregroundStyle(.secondary)
+                    }
+                    Text(detailStatusLine)
+                        .font(SingWordTypography.labelMedium)
+                        .foregroundStyle(.secondary)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(16)
+                .background(.thinMaterial)
+                .clipShape(RoundedRectangle(cornerRadius: 14))
+
+                if let match {
+                    Text("相关单词 (\(match.matchedWords.count))")
+                        .font(SingWordTypography.titleMedium)
+                        .foregroundStyle(.secondary)
+
+                    if match.matchedWords.isEmpty {
+                        Text("歌词已识别，但当前词书没有命中单词。")
+                            .font(SingWordTypography.bodyMedium)
+                            .foregroundStyle(.secondary)
+                    } else {
+                        ForEach(match.matchedWordItems) { word in
+                            HStack(alignment: .top, spacing: 10) {
+                                VStack(alignment: .leading, spacing: 6) {
+                                    HStack(spacing: 8) {
+                                        Text(word.word)
+                                            .font(SingWordTypography.titleMedium)
+                                        Text(word.pos)
+                                            .font(SingWordTypography.labelMedium)
+                                            .foregroundStyle(.secondary)
+                                        Text(word.source)
+                                            .font(SingWordTypography.labelSmallBold)
+                                            .padding(.horizontal, 6)
+                                            .padding(.vertical, 3)
+                                            .background(Color.sourceTag(word.source).opacity(0.2))
+                                            .foregroundStyle(Color.sourceTag(word.source))
+                                            .clipShape(RoundedRectangle(cornerRadius: 6))
+                                    }
+
+                                    Text(word.definition)
+                                        .font(SingWordTypography.bodyMedium)
+                                        .foregroundStyle(.secondary)
+                                }
+
+                                Spacer(minLength: 8)
+
+                                Button {
+                                    onToggleFavorite(word)
+                                } label: {
+                                    Image(systemName: favoriteWords.contains(word.word) ? "heart.fill" : "heart")
+                                        .foregroundStyle(favoriteWords.contains(word.word) ? Color.singWordError : .secondary)
+                                }
+                                .buttonStyle(.plain)
+                            }
+                            .padding(14)
+                            .background(.thinMaterial)
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                        }
+                    }
+                } else {
+                    VStack(alignment: .leading, spacing: 10) {
+                        Text(track.failureMessage.isEmpty ? "当前没有可展示的识别结果。" : track.failureMessage)
+                            .font(SingWordTypography.bodyMedium)
+                            .foregroundStyle(track.status == .matched ? .secondary : Color.singWordError)
+
+                        if track.status == .unmatched || track.status == .failed || track.status == .cancelled {
+                            Button("重试匹配", action: onRetry)
+                                .buttonStyle(.borderedProminent)
+                        }
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(16)
+                    .background(.thinMaterial)
+                    .clipShape(RoundedRectangle(cornerRadius: 14))
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+        }
+        .navigationTitle("Library 歌曲")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+
+    private var detailStatusLine: String {
+        switch track.status {
+        case .matched:
+            return "已匹配 · 来源 \(match?.lyricsProvider ?? "-") · 共 \(match?.totalTokens ?? 0) 个单词"
+        case .matchingLyrics:
+            return "正在识别歌词"
+        case .queued:
+            return "等待识别"
+        case .unmatched:
+            return "未匹配"
+        case .failed:
+            return "失败"
+        case .cancelled:
+            return "已取消"
+        }
+    }
+}

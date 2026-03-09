@@ -4,6 +4,7 @@ struct RootTabView: View {
     @ObservedObject var appModel: AppModel
 
     @StateObject private var searchViewModel: SearchViewModel
+    @StateObject private var libraryImportStore: LibraryImportStore
     @StateObject private var favoritesViewModel: FavoritesViewModel
     @StateObject private var settingsViewModel: SettingsViewModel
 
@@ -20,6 +21,10 @@ struct RootTabView: View {
                 downloadedSongsStore: appModel.downloadedSongsStore,
                 widgetSnapshotStore: appModel.widgetSnapshotStore
             )
+        )
+
+        _libraryImportStore = StateObject(
+            wrappedValue: appModel.libraryImportStore
         )
 
         _favoritesViewModel = StateObject(
@@ -44,6 +49,17 @@ struct RootTabView: View {
             SearchFlowView(viewModel: searchViewModel)
                 .tabItem {
                     Label("搜索", systemImage: "magnifyingglass")
+                }
+
+            LibraryFlowView(
+                viewModel: libraryImportStore,
+                favoriteWords: searchViewModel.favoriteWords,
+                onToggleFavorite: { word in
+                    searchViewModel.toggleFavorite(word)
+                }
+            )
+                .tabItem {
+                    Label("Library", systemImage: "music.note.list")
                 }
 
             FavoritesFlowView(

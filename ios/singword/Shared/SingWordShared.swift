@@ -7,6 +7,9 @@ enum SingWordShared {
     nonisolated static let widgetSnapshotFileName = "widget_snapshot.json"
     nonisolated static let recentSearchesFileName = "recent_searches.json"
     nonisolated static let downloadedSongsFileName = "downloaded_songs.json"
+    nonisolated static let importedTracksFileName = "imported_tracks.json"
+    nonisolated static let importedTrackMatchesFileName = "imported_track_matches.json"
+    nonisolated static let libraryImportStateFileName = "library_import_state.json"
 
     nonisolated static func sharedDefaults() -> UserDefaults? {
         UserDefaults(suiteName: appGroupIdentifier)
