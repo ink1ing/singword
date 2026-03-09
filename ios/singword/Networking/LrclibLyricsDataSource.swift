@@ -82,7 +82,8 @@ final class LrclibLyricsDataSource: LyricsDataSource, LyricsCandidateDataSource 
                         trackName: normalizedTrackName.isEmpty ? query : normalizedTrackName,
                         artistName: track.artistName ?? "",
                         lyrics: track.plainLyrics ?? "",
-                        provider: providerName
+                        provider: providerName,
+                        duration: track.duration
                     )
                 }
 

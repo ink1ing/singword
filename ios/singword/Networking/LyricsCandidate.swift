@@ -5,4 +5,5 @@ struct LyricsCandidate: Hashable, Codable {
     let artistName: String
     let lyrics: String
     let provider: String
+    let duration: TimeInterval?
 }

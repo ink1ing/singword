@@ -54,7 +54,8 @@ final class LyricsRepository {
                         trackName: trackName,
                         artistName: artistName,
                         lyrics: lyrics,
-                        provider: provider
+                        provider: provider,
+                        duration: nil
                     )
                 ],
                 provider: provider

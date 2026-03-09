@@ -150,7 +150,8 @@ final class SearchViewModel: ObservableObject {
                         trackName: trackName,
                         artistName: artistName,
                         lyrics: lyrics,
-                        provider: provider
+                        provider: provider,
+                        duration: nil
                     )
                 )
 

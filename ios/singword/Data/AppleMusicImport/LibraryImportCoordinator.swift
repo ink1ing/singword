@@ -11,17 +11,20 @@ final class LibraryImportCoordinator: @unchecked Sendable {
     private let lyricsRepository: LyricsRepository
     private let wordbookRepository: WordbookRepository
     private let settingsRepository: SettingsRepository
+    private let musicBrainzResolver: MusicBrainzRecordingResolver
 
     init(
         authorizationService: AppleMusicAuthorizationService,
         lyricsRepository: LyricsRepository,
         wordbookRepository: WordbookRepository,
-        settingsRepository: SettingsRepository
+        settingsRepository: SettingsRepository,
+        musicBrainzResolver: MusicBrainzRecordingResolver = MusicBrainzRecordingResolver()
     ) {
         self.authorizationService = authorizationService
         self.lyricsRepository = lyricsRepository
         self.wordbookRepository = wordbookRepository
         self.settingsRepository = settingsRepository
+        self.musicBrainzResolver = musicBrainzResolver
     }
 
     func currentAccessStatus() async -> LibraryAccessStatus {
@@ -148,13 +151,75 @@ final class LibraryImportCoordinator: @unchecked Sendable {
             switch await lyricsRepository.searchCandidates(query, limit: 5) {
             case .success(let candidates, let provider):
                 let exactMatches = candidates.filter { strictMatch(candidate: $0, track: track) }
+                let durationFiltered = disambiguateByDuration(candidates: exactMatches, track: track)
 
-                if exactMatches.count > 1 {
+                if durationFiltered.count == 1, let matchedCandidate = durationFiltered.first {
+                    let tokens = LyricsProcessor.tokenize(matchedCandidate.lyrics)
+                    let matchedWords = VocabMatcher.match(tokens: tokens, wordbooks: wordbooks)
+                    let match = ImportedTrackMatch(
+                        trackID: track.id,
+                        lyricsProvider: provider,
+                        resolvedTrackName: matchedCandidate.trackName,
+                        resolvedArtistName: matchedCandidate.artistName,
+                        totalTokens: tokens.count,
+                        matchedWords: matchedWords.map {
+                            SongWordSnapshot(
+                                word: $0.word,
+                                pos: $0.pos,
+                                definition: $0.definition,
+                                source: $0.source
+                            )
+                        },
+                        matchedAt: Date().timeIntervalSince1970
+                    )
+                    return ImportedTrackProcessingResult(
+                        track: track.updating(
+                            status: .matched,
+                            failureReason: nil,
+                            failureMessage: ""
+                        ),
+                        match: match
+                    )
+                }
+
+                if durationFiltered.count > 1 {
+                    let musicBrainzResolved = await disambiguateWithMusicBrainz(
+                        candidates: durationFiltered,
+                        track: track
+                    )
+                    if musicBrainzResolved.count == 1, let matchedCandidate = musicBrainzResolved.first {
+                        let tokens = LyricsProcessor.tokenize(matchedCandidate.lyrics)
+                        let matchedWords = VocabMatcher.match(tokens: tokens, wordbooks: wordbooks)
+                        let match = ImportedTrackMatch(
+                            trackID: track.id,
+                            lyricsProvider: provider,
+                            resolvedTrackName: matchedCandidate.trackName,
+                            resolvedArtistName: matchedCandidate.artistName,
+                            totalTokens: tokens.count,
+                            matchedWords: matchedWords.map {
+                                SongWordSnapshot(
+                                    word: $0.word,
+                                    pos: $0.pos,
+                                    definition: $0.definition,
+                                    source: $0.source
+                                )
+                            },
+                            matchedAt: Date().timeIntervalSince1970
+                        )
+                        return ImportedTrackProcessingResult(
+                            track: track.updating(
+                                status: .matched,
+                                failureReason: nil,
+                                failureMessage: ""
+                            ),
+                            match: match
+                        )
+                    }
                     sawAmbiguous = true
                     continue
                 }
 
-                guard let matchedCandidate = exactMatches.first else {
+                guard let matchedCandidate = durationFiltered.first else {
                     continue
                 }
 
@@ -244,6 +309,50 @@ final class LibraryImportCoordinator: @unchecked Sendable {
         let candidateArtist = canonicalArtist(candidate.artistName)
 
         return expectedTitles.contains(candidateTitle) && candidateArtist == expectedArtist
+    }
+
+    private func disambiguateByDuration(
+        candidates: [LyricsCandidate],
+        track: ImportedTrack
+    ) -> [LyricsCandidate] {
+        guard candidates.count > 1, let duration = track.duration else {
+            return candidates
+        }
+        let filtered = candidates.filter { candidate in
+            guard let candidateDuration = candidate.duration else { return false }
+            return abs(candidateDuration - duration) <= 3
+        }
+        return filtered.isEmpty ? candidates : filtered
+    }
+
+    private func disambiguateWithMusicBrainz(
+        candidates: [LyricsCandidate],
+        track: ImportedTrack
+    ) async -> [LyricsCandidate] {
+        let resolvedCandidates = await musicBrainzResolver.search(
+            title: track.title,
+            artist: track.artistName,
+            isrc: track.isrc
+        )
+        let exactResolved = resolvedCandidates.filter { resolved in
+            canonicalTitle(resolved.title) == canonicalTitle(track.title) &&
+                canonicalArtist(resolved.artistName) == canonicalArtist(track.artistName)
+        }
+        guard !exactResolved.isEmpty else {
+            return candidates
+        }
+
+        let targetDurations = exactResolved.compactMap(\.duration)
+        guard !targetDurations.isEmpty else {
+            return candidates
+        }
+
+        let filtered = candidates.filter { candidate in
+            guard let candidateDuration = candidate.duration else { return false }
+            return targetDurations.contains { abs($0 - candidateDuration) <= 2 }
+        }
+
+        return filtered.isEmpty ? candidates : filtered
     }
 
     private func titleVariants(for title: String) -> [String] {
