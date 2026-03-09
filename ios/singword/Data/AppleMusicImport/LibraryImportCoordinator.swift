@@ -69,16 +69,8 @@ final class LibraryImportCoordinator: @unchecked Sendable {
             let importedAt = Date().timeIntervalSince1970
 
             if let existing = existingByID[id] {
-                let preservedStatus: ImportedTrackStatus = {
-                    switch existing.status {
-                    case .matchingLyrics:
-                        return .queued
-                    case .matched where matchedIDs.contains(id):
-                        return .matched
-                    default:
-                        return existing.status
-                    }
-                }()
+                let preservedStatus: ImportedTrackStatus =
+                    existing.status == .matched && matchedIDs.contains(id) ? .matched : .queued
 
                 return ImportedTrack(
                     id: id,
@@ -91,8 +83,8 @@ final class LibraryImportCoordinator: @unchecked Sendable {
                     storefront: storefront,
                     importedAt: importedAt,
                     status: preservedStatus,
-                    failureReason: existing.failureReason,
-                    failureMessage: existing.failureMessage
+                    failureReason: preservedStatus == .matched ? existing.failureReason : nil,
+                    failureMessage: preservedStatus == .matched ? existing.failureMessage : ""
                 )
             }
 
