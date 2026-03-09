@@ -215,6 +215,36 @@ final class LibraryImportCoordinator: @unchecked Sendable {
                             match: match
                         )
                     }
+                    // ── Duration-best-pick: pick the uniquely closest candidate ──
+                    if let bestPick = durationBestPick(candidates: musicBrainzResolved, track: track) {
+                        let tokens = LyricsProcessor.tokenize(bestPick.lyrics)
+                        let matchedWords = VocabMatcher.match(tokens: tokens, wordbooks: wordbooks)
+                        let match = ImportedTrackMatch(
+                            trackID: track.id,
+                            lyricsProvider: provider,
+                            resolvedTrackName: bestPick.trackName,
+                            resolvedArtistName: bestPick.artistName,
+                            totalTokens: tokens.count,
+                            matchedWords: matchedWords.map {
+                                SongWordSnapshot(
+                                    word: $0.word,
+                                    pos: $0.pos,
+                                    definition: $0.definition,
+                                    source: $0.source
+                                )
+                            },
+                            matchedAt: Date().timeIntervalSince1970
+                        )
+                        return ImportedTrackProcessingResult(
+                            track: track.updating(
+                                status: .matched,
+                                failureReason: nil,
+                                failureMessage: ""
+                            ),
+                            match: match
+                        )
+                    }
+
                     sawAmbiguous = true
                     continue
                 }
@@ -323,6 +353,36 @@ final class LibraryImportCoordinator: @unchecked Sendable {
             return abs(candidateDuration - duration) <= 3
         }
         return filtered.isEmpty ? candidates : filtered
+    }
+
+    /// Pick the uniquely closest candidate by duration.
+    /// Returns the best candidate only when it is ≥ `minGap` seconds closer
+    /// than the runner-up. Returns `nil` otherwise (ambiguous).
+    private func durationBestPick(
+        candidates: [LyricsCandidate],
+        track: ImportedTrack,
+        minGap: TimeInterval = 5
+    ) -> LyricsCandidate? {
+        guard candidates.count >= 2, let trackDuration = track.duration else {
+            return nil
+        }
+
+        // Pair each candidate with its absolute duration delta
+        let withDelta: [(candidate: LyricsCandidate, delta: TimeInterval)] = candidates.compactMap { c in
+            guard let d = c.duration else { return nil }
+            return (c, abs(d - trackDuration))
+        }
+        guard withDelta.count >= 2 else { return nil }
+
+        let sorted = withDelta.sorted { $0.delta < $1.delta }
+        let best = sorted[0]
+        let runnerUp = sorted[1]
+
+        // Only pick when the best is decisively closer than the runner-up
+        if runnerUp.delta - best.delta >= minGap {
+            return best.candidate
+        }
+        return nil
     }
 
     private func disambiguateWithMusicBrainz(
