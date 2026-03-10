@@ -54,12 +54,16 @@ struct RootTabView: View {
             LibraryFlowView(
                 viewModel: libraryImportStore,
                 favoriteWords: searchViewModel.favoriteWords,
+                downloadedSongIDs: favoritesViewModel.downloadedSongIDs,
                 onToggleFavorite: { word in
                     searchViewModel.toggleFavorite(word)
+                },
+                onToggleSongFavorite: { snapshot in
+                    favoritesViewModel.toggleSong(snapshot)
                 }
             )
                 .tabItem {
-                    Label("Library", systemImage: "music.note.list")
+                    Label("资料库", systemImage: "music.note.list")
                 }
 
             FavoritesFlowView(

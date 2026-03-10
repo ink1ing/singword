@@ -124,4 +124,15 @@ extension ImportedTrack {
             failureMessage: failureMessage ?? self.failureMessage
         )
     }
+
+    func asFavoriteSnapshot(match: ImportedTrackMatch?) -> SongMatchSnapshot {
+        SongMatchSnapshot(
+            trackName: title,
+            artistName: artistName,
+            provider: match?.lyricsProvider ?? "library",
+            totalTokens: match?.totalTokens ?? 0,
+            matchedWords: match?.matchedWordItems ?? [],
+            timestamp: Date().timeIntervalSince1970
+        )
+    }
 }

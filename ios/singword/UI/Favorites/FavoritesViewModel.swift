@@ -5,6 +5,7 @@ import Foundation
 final class FavoritesViewModel: ObservableObject {
     @Published private(set) var favorites: [FavoriteWord] = []
     @Published private(set) var songs: [SongMatchSnapshot] = []
+    @Published private(set) var downloadedSongIDs: Set<String> = []
 
     private let favoritesStore: FavoritesStore
     private let downloadedSongsStore: DownloadedSongsStore
@@ -23,6 +24,7 @@ final class FavoritesViewModel: ObservableObject {
         downloadedSongsStore.$songs
             .sink { [weak self] songs in
                 self?.songs = songs
+                self?.downloadedSongIDs = Set(songs.map(\.id))
             }
             .store(in: &cancellables)
 
@@ -41,6 +43,16 @@ final class FavoritesViewModel: ObservableObject {
     func removeSong(_ snapshot: SongMatchSnapshot) {
         Task {
             await downloadedSongsStore.remove(snapshot)
+        }
+    }
+
+    func toggleSong(_ snapshot: SongMatchSnapshot) {
+        Task {
+            if downloadedSongIDs.contains(snapshot.id) {
+                await downloadedSongsStore.remove(snapshot)
+            } else {
+                await downloadedSongsStore.save(snapshot)
+            }
         }
     }
 }

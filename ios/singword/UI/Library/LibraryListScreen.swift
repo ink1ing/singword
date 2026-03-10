@@ -3,7 +3,10 @@ import SwiftUI
 struct LibraryListScreen: View {
     @ObservedObject var viewModel: LibraryImportStore
     let favoriteWords: Set<String>
+    let downloadedSongIDs: Set<String>
     let onToggleFavorite: (MatchedWord) -> Void
+    let onToggleSongFavorite: (SongMatchSnapshot) -> Void
+    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         Group {
@@ -25,7 +28,11 @@ struct LibraryListScreen: View {
                                         track: track,
                                         match: viewModel.match(for: track.id),
                                         favoriteWords: favoriteWords,
+                                        isSongFavorite: downloadedSongIDs.contains(track.id),
                                         onToggleFavorite: onToggleFavorite,
+                                        onToggleSongFavorite: {
+                                            onToggleSongFavorite(track.asFavoriteSnapshot(match: viewModel.match(for: track.id)))
+                                        },
                                         onRetry: {
                                             viewModel.retry(track)
                                         }
@@ -33,16 +40,17 @@ struct LibraryListScreen: View {
                                 } label: {
                                     LibraryTrackRow(track: track, match: viewModel.match(for: track.id))
                                 }
+                                .listRowBackground(surfaceColor)
                             }
                         }
                     }
                 }
                 .listStyle(.insetGrouped)
                 .scrollContentBackground(.hidden)
-                .background(Color.clear)
+                .background(backgroundColor.ignoresSafeArea())
             }
         }
-        .navigationTitle("Library")
+        .navigationTitle("资料库")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
@@ -51,6 +59,14 @@ struct LibraryListScreen: View {
                 }
             }
         }
+    }
+
+    private var backgroundColor: Color {
+        colorScheme == .dark ? SingWordPalette.darkBackground : SingWordPalette.lightBackground
+    }
+
+    private var surfaceColor: Color {
+        colorScheme == .dark ? SingWordPalette.darkSurface : SingWordPalette.lightSurface
     }
 }
 

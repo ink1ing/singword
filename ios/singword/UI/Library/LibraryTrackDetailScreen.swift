@@ -4,8 +4,11 @@ struct LibraryTrackDetailScreen: View {
     let track: ImportedTrack
     let match: ImportedTrackMatch?
     let favoriteWords: Set<String>
+    let isSongFavorite: Bool
     let onToggleFavorite: (MatchedWord) -> Void
+    let onToggleSongFavorite: () -> Void
     let onRetry: () -> Void
+    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         ScrollView {
@@ -26,10 +29,20 @@ struct LibraryTrackDetailScreen: View {
                     Text(detailStatusLine)
                         .font(SingWordTypography.labelMedium)
                         .foregroundStyle(.secondary)
+
+                    Button(action: onToggleSongFavorite) {
+                        HStack(spacing: 8) {
+                            Image(systemName: isSongFavorite ? "heart.fill" : "heart")
+                            Text(isSongFavorite ? "已收藏" : "收藏")
+                                .font(SingWordTypography.bodyMedium)
+                        }
+                        .foregroundStyle(primaryColor)
+                    }
+                    .buttonStyle(.plain)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(16)
-                .background(.thinMaterial)
+                .background(surfaceColor)
                 .clipShape(RoundedRectangle(cornerRadius: 14))
 
                 if let match {
@@ -76,7 +89,7 @@ struct LibraryTrackDetailScreen: View {
                                 .buttonStyle(.plain)
                             }
                             .padding(14)
-                            .background(.thinMaterial)
+                            .background(surfaceColor)
                             .clipShape(RoundedRectangle(cornerRadius: 12))
                         }
                     }
@@ -93,14 +106,15 @@ struct LibraryTrackDetailScreen: View {
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(16)
-                    .background(.thinMaterial)
+                    .background(surfaceColor)
                     .clipShape(RoundedRectangle(cornerRadius: 14))
                 }
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
         }
-        .navigationTitle("Library 歌曲")
+        .background(backgroundColor.ignoresSafeArea())
+        .navigationTitle("资料库歌曲")
         .navigationBarTitleDisplayMode(.inline)
     }
 
@@ -119,5 +133,17 @@ struct LibraryTrackDetailScreen: View {
         case .cancelled:
             return "已取消"
         }
+    }
+
+    private var backgroundColor: Color {
+        colorScheme == .dark ? SingWordPalette.darkBackground : SingWordPalette.lightBackground
+    }
+
+    private var surfaceColor: Color {
+        colorScheme == .dark ? SingWordPalette.darkSurface : SingWordPalette.lightSurface
+    }
+
+    private var primaryColor: Color {
+        colorScheme == .dark ? SingWordPalette.darkLink : SingWordPalette.lightLink
     }
 }

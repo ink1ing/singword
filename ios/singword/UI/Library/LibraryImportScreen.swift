@@ -3,6 +3,7 @@ import SwiftUI
 struct LibraryImportScreen: View {
     @ObservedObject var viewModel: LibraryImportStore
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.colorScheme) private var colorScheme
     @State private var showResetConfirmation = false
 
     var body: some View {
@@ -16,7 +17,7 @@ struct LibraryImportScreen: View {
             }
             .padding(16)
         }
-        .background(Color.clear)
+        .background(backgroundColor.ignoresSafeArea())
         .navigationTitle("导入 Apple Music")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -36,6 +37,10 @@ struct LibraryImportScreen: View {
         } message: {
             Text("将清除所有已保存的导入记录和匹配结果，下次导入将从零开始重新处理所有歌曲。")
         }
+    }
+
+    private var backgroundColor: Color {
+        colorScheme == .dark ? SingWordPalette.darkBackground : SingWordPalette.lightBackground
     }
 
     @ViewBuilder
@@ -129,6 +134,7 @@ struct LibraryImportScreen: View {
 private struct InfoCard: View {
     let title: String
     let message: String
+    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -140,13 +146,18 @@ private struct InfoCard: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(16)
-        .background(.thinMaterial)
+        .background(surfaceColor)
         .clipShape(RoundedRectangle(cornerRadius: 14))
+    }
+
+    private var surfaceColor: Color {
+        colorScheme == .dark ? SingWordPalette.darkSurface : SingWordPalette.lightSurface
     }
 }
 
 private struct ErrorCard: View {
     let message: String
+    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         Text(message)
@@ -154,13 +165,18 @@ private struct ErrorCard: View {
             .foregroundStyle(Color.singWordError)
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(16)
-            .background(.thinMaterial)
+            .background(surfaceColor)
             .clipShape(RoundedRectangle(cornerRadius: 14))
+    }
+
+    private var surfaceColor: Color {
+        colorScheme == .dark ? SingWordPalette.darkSurface : SingWordPalette.lightSurface
     }
 }
 
 struct ImportStatusCard: View {
     let progress: LibraryImportProgress
+    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -186,7 +202,7 @@ struct ImportStatusCard: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(16)
-        .background(.thinMaterial)
+        .background(surfaceColor)
         .clipShape(RoundedRectangle(cornerRadius: 14))
     }
 
@@ -214,5 +230,9 @@ struct ImportStatusCard: View {
     private var progressValue: Double {
         guard progress.totalCount > 0 else { return 0 }
         return Double(progress.processedCount) / Double(progress.totalCount)
+    }
+
+    private var surfaceColor: Color {
+        colorScheme == .dark ? SingWordPalette.darkSurface : SingWordPalette.lightSurface
     }
 }

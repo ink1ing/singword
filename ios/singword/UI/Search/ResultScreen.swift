@@ -108,7 +108,7 @@ private struct SongInfoCard: View {
             Button(action: onDownload) {
                 HStack(spacing: 8) {
                     Image(systemName: isDownloaded ? "arrow.down.circle.fill" : "arrow.down.circle")
-                    Text(isDownloaded ? "已下载" : "下载到收藏")
+                    Text(isDownloaded ? "已收藏" : "收藏并下载")
                         .font(SingWordTypography.bodyMedium)
                 }
                 .foregroundStyle(primaryColor)
