@@ -9,6 +9,26 @@ struct LibraryTrackDetailScreen: View {
     let onToggleSongFavorite: () -> Void
     let onRetry: () -> Void
     @Environment(\.colorScheme) private var colorScheme
+    @State private var localSongFavorite: Bool
+
+    init(
+        track: ImportedTrack,
+        match: ImportedTrackMatch?,
+        favoriteWords: Set<String>,
+        isSongFavorite: Bool,
+        onToggleFavorite: @escaping (MatchedWord) -> Void,
+        onToggleSongFavorite: @escaping () -> Void,
+        onRetry: @escaping () -> Void
+    ) {
+        self.track = track
+        self.match = match
+        self.favoriteWords = favoriteWords
+        self.isSongFavorite = isSongFavorite
+        self.onToggleFavorite = onToggleFavorite
+        self.onToggleSongFavorite = onToggleSongFavorite
+        self.onRetry = onRetry
+        _localSongFavorite = State(initialValue: isSongFavorite)
+    }
 
     var body: some View {
         ScrollView {
@@ -32,12 +52,17 @@ struct LibraryTrackDetailScreen: View {
 
                     Button(action: onToggleSongFavorite) {
                         HStack(spacing: 8) {
-                            Image(systemName: isSongFavorite ? "heart.fill" : "heart")
-                            Text(isSongFavorite ? "已收藏" : "收藏")
+                            Image(systemName: localSongFavorite ? "heart.fill" : "heart")
+                            Text(localSongFavorite ? "已收藏" : "收藏")
                                 .font(SingWordTypography.bodyMedium)
                         }
                         .foregroundStyle(primaryColor)
                     }
+                    .simultaneousGesture(
+                        TapGesture().onEnded {
+                            localSongFavorite.toggle()
+                        }
+                    )
                     .buttonStyle(.plain)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)

@@ -24,14 +24,15 @@ struct LibraryListScreen: View {
                         Section(section.0) {
                             ForEach(section.1) { track in
                                 NavigationLink {
+                                    let favoriteSnapshot = track.asFavoriteSnapshot(match: viewModel.match(for: track.id))
                                     LibraryTrackDetailScreen(
                                         track: track,
                                         match: viewModel.match(for: track.id),
                                         favoriteWords: favoriteWords,
-                                        isSongFavorite: downloadedSongIDs.contains(track.id),
+                                        isSongFavorite: downloadedSongIDs.contains(favoriteSnapshot.id),
                                         onToggleFavorite: onToggleFavorite,
                                         onToggleSongFavorite: {
-                                            onToggleSongFavorite(track.asFavoriteSnapshot(match: viewModel.match(for: track.id)))
+                                            onToggleSongFavorite(favoriteSnapshot)
                                         },
                                         onRetry: {
                                             viewModel.retry(track)
